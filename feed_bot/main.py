@@ -2,8 +2,6 @@ import telebot
 import webbrowser   
 from telebot import types
 
-added = []
-
 
 bot = telebot.TeleBot("6400448974:AAEhI-uuoUsnuLUJdLsblgeBzotrFpysJu4")
 
@@ -33,12 +31,23 @@ def on_click(message):
         markup.add(types.KeyboardButton("✅Готово"))
         
         bot.send_message(message.chat.id, "Имя Фамилия", reply_markup=markup)
+    
+    if message.text == "🙅‍♂️Отменить":
+        markup = types.ReplyKeyboardMarkup()
+        btn1 = types.KeyboardButton("✏️Заполнить форму")
+        btn2 = types.KeyboardButton("🌐Сайт House System")
+
+        markup.add(btn1, btn2)
+
+        bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи!", reply_markup=markup)
 
     if message.text == "✅Готово" and message.text != "":
         # удаление из ReplyKeyboardMarkup кнопки "готово"
 
         markup.row(btn1, btn2, btn3, btn4)
         bot.send_message(message.chat.id, "Выберите House", reply_markup=markup)
+
+    added = []
 
     @bot.callback_query_handler(func=lambda callback: True)
     def callback_message(callback):
@@ -47,7 +56,7 @@ def on_click(message):
         house = ["east", "west", "north", "south"]
         exp = ["Опыт публичного выступления", "Социальный опыт", "Организаторский опыт", "Опыт творчества", "Опыт наставничества", "Спортивный опыт", "Опыт участника", "Академические достижения"]
 
-        if callback.data in house: 
+        if callback.data in house:
             btn1 = types.InlineKeyboardButton("Опыт публичного выступления", callback_data="Опыт публичного выступления")
             btn2 = types.InlineKeyboardButton("Социальный опыт", callback_data="Социальный опыт")
             btn3 = types.InlineKeyboardButton("Организаторский опыт", callback_data="Организаторский опыт")
@@ -85,7 +94,8 @@ def on_click(message):
 
             bot.send_message(message.chat.id, "Что именно ты сделал?", reply_markup=markup)
 
-            bot.register_next_step_handler(message, mid_on_click)
+            bot.register_next_step_handler(message, mid_on_click5)
+            
 
         btns = ["Мыслить", "Коммуницировать", "Уметь-рисковать", "Быть-гибким", "Быть-упорным", "Командная-работа", "Уметь-планировать", "Глобальное-мышление", "Этические-нормы", "Принимать-решения", "Ответственность-решение", "Сильные-стороны", "Эффективность"]
         callback_text = {
@@ -104,11 +114,9 @@ def on_click(message):
             "Эффективность": "Верить в собственную эффективность"
         }
 
-
         if callback.data in btns:
             added.append(callback_text[callback.data])
             print(added)
-
 
         if callback.data == "✅Готово":
             markup = types.InlineKeyboardMarkup()
@@ -117,8 +125,19 @@ def on_click(message):
             markup.row(yes, no)
 
             bot.send_message(message.chat.id, f"Хотел бы ты повторить этот опыт/посоветовать его другу?", reply_markup=markup)
-        
-        if callback.data == "Да" or callback.data == "Нет":
+
+        if callback.data == "✅Готов":
+            markup = types.ReplyKeyboardMarkup()
+            btn1 = types.KeyboardButton("✅Готово")
+
+            markup.row(btn1)
+
+            bot.send_message(message.chat.id, "Как именно ты прокачал выбранный скил (или скилы)?", reply_markup=markup)
+            bot.register_next_step_handler(message, mid_on_click10_skills)
+
+        team_work = ["удалась", "не-удалась", "не-относится"]
+
+        if callback.data == "Да" or callback.data == "Нет" or (callback.data in team_work):
             markup = types.InlineKeyboardMarkup()
             btn1 = types.InlineKeyboardButton("👎1", callback_data="1rate")
             btn2= types.InlineKeyboardButton("2", callback_data="2rate")
@@ -133,7 +152,7 @@ def on_click(message):
             markup.row(btn1, btn2, btn3)
             markup.row(btn4, btn5, btn6)
             markup.row(btn7, btn8, btn9)
-            markup.row(btn10)
+            markup.row(btn10)   
 
             bot.send_message(message.chat.id, "Оцени как ты справился с этим опытом по 10-бальной шкале", reply_markup=markup)
 
@@ -147,21 +166,106 @@ def on_click(message):
             
             markup.row(send, cancel)
             
+
             bot.send_message(message.chat.id, "Отправить форму?", reply_markup=markup)
-            
+            bot.register_next_step_handler(message, on_click)
+
         if callback.data == "10":
-            pass
+            markup = types.ReplyKeyboardMarkup()
+            rdy_btn = types.KeyboardButton("✅Готово")
+
+            markup.add(rdy_btn)
+
+            bot.send_message(message.chat.id, "Что именно ты сделал?", reply_markup=markup)
+
+            bot.register_next_step_handler(message, mid_on_click10)
+
 
         if callback.data == "15":
             pass            
         
 @bot.message_handler()
-def mid_on_click(message):
+def mid_on_click5(message):
     if message.text != " ":
-        bot.register_next_step_handler(message, on_click3)
-    
+        bot.register_next_step_handler(message, on_click5)
+
 @bot.message_handler()
-def on_click3(message):
+def mid_on_click10(message):
+    if message.text != " ":
+        bot.register_next_step_handler(message, on_click10)
+
+@bot.message_handler()
+def mid_on_click10_skills(message):
+    if message.text != " ":
+        bot.register_next_step_handler(message, on_click10_skills)
+
+@bot.message_handler()
+def on_click10_skills(message):
+    if message.text == "✅Готово":
+        markup = types.ReplyKeyboardMarkup()
+        btn1 = types.KeyboardButton("✅Готово")
+
+        markup.row(btn1)
+
+        bot.send_message(message.chat.id, "Столкнулся ли ты со сложностями при планировании или во время реализации опыта? Опиши их и как с ними справился", reply_markup=markup)
+        bot.register_next_step_handler(message, mid_on_click10_difficult)
+
+@bot.message_handler()
+def mid_on_click10_difficult(message):
+    if message.text != " ":
+        bot.register_next_step_handler(message, on_click10_difficult)
+
+@bot.message_handler()
+def on_click10_difficult(message):
+    # тут пользователь пишет столкнулся ли он со сложностями
+    if message.text == "✅Готово":
+        markup = types.InlineKeyboardMarkup()
+        btn1 = types.InlineKeyboardButton("К этому опыту не относится", callback_data="не-относится")
+        btn2 = types.InlineKeyboardButton("Работа в команде не удалась", callback_data="не-удалась")
+        btn3 = types.InlineKeyboardButton("Работа в команде удалась", callback_data="удалась")
+
+        markup.row(btn1)
+        markup.row(btn2)
+        markup.row(btn3)
+
+        bot.send_message(message.chat.id, "Удалась ли работа в команде", reply_markup=markup)
+
+@bot.message_handler()
+def on_click10(message):
+    if message.text == "✅Готово":
+
+        markup = types.InlineKeyboardMarkup()
+        btn1 = types.InlineKeyboardButton("Мыслить", callback_data="Мыслить")
+        btn2 = types.InlineKeyboardButton("Коммуницировать", callback_data="Коммуницировать")
+        btn3 = types.InlineKeyboardButton("Уметь рисковать", callback_data="Уметь-рисковать")
+        btn4 = types.InlineKeyboardButton("Быть гибким", callback_data="Быть-гибким")
+        btn5 = types.InlineKeyboardButton("Быть упорным", callback_data="Быть-упорным")
+        btn6 = types.InlineKeyboardButton("Работать в команде", callback_data="Командная-работа")
+        btn7 = types.InlineKeyboardButton("Уметь планировать", callback_data="Уметь-планировать")
+        btn8 = types.InlineKeyboardButton("Осознавать важность глобального мышления", callback_data="Глобальное-мышление")
+        btn9 = types.InlineKeyboardButton("Осознавать важность этических норм", callback_data="Этические-нормы")
+        btn10 = types.InlineKeyboardButton("Уметь принимать решения", callback_data="Принимать-решения")
+        btn11 = types.InlineKeyboardButton("Нести ответственность за решение", callback_data="Ответственность-решение")
+        btn12 = types.InlineKeyboardButton("Оценивать сильные стороны и точки роста", callback_data="Сильные-стороны")
+        btn13 = types.InlineKeyboardButton("Верить в собственную эффективность", callback_data="Эффективность")
+        btn14 = types.InlineKeyboardButton("✅Готов", callback_data="✅Готов")
+        
+        markup.row(btn1, btn2)
+        markup.row(btn3, btn4)
+        markup.row(btn5, btn6)
+        markup.row(btn7)
+        markup.row(btn8)
+        markup.row(btn9)
+        markup.row(btn10)
+        markup.row(btn11)
+        markup.row(btn12)
+        markup.row(btn13)
+        markup.row(btn14)
+        
+        bot.send_message(message.chat.id, "Какой/какие skill/skills удалось прокачать во время планирования и реализации опыта?", reply_markup=markup)
+
+@bot.message_handler()
+def on_click5(message):
     if message.text == "✅Готово":
 
         markup = types.InlineKeyboardMarkup()
