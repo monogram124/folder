@@ -2,6 +2,8 @@ import telebot
 import webbrowser   
 from telebot import types
 
+added = []
+
 
 bot = telebot.TeleBot("6400448974:AAEhI-uuoUsnuLUJdLsblgeBzotrFpysJu4")
 
@@ -85,6 +87,68 @@ def on_click(message):
 
             bot.register_next_step_handler(message, mid_on_click)
 
+        btns = ["Мыслить", "Коммуницировать", "Уметь-рисковать", "Быть-гибким", "Быть-упорным", "Командная-работа", "Уметь-планировать", "Глобальное-мышление", "Этические-нормы", "Принимать-решения", "Ответственность-решение", "Сильные-стороны", "Эффективность"]
+        callback_text = {
+            "Мыслить": "Мыслить",
+            "Коммуницировать": "Коммуницировать",
+            "Уметь-рисковать": "Уметь рисковать",
+            "Быть-гибким": "Быть гибким",
+            "Быть-упорным": "Быть упорным",
+            "Командная-работа": "Работать в команде",
+            "Уметь-планировать": "Уметь планировать",
+            "Глобальное-мышление": "Осознавать важность глобального мышления",
+            "Этические-нормы": "Осознавать важность этических норм",
+            "Принимать-решения": "Уметь принимать решения",
+            "Ответственность-решение": "Нести за отвественность за свои решения",
+            "Сильные-стороны": "Оценивать сильные стороны и точки роста",
+            "Эффективность": "Верить в собственную эффективность"
+        }
+
+
+        if callback.data in btns:
+            added.append(callback_text[callback.data])
+            print(added)
+
+
+        if callback.data == "✅Готово":
+            markup = types.InlineKeyboardMarkup()
+            yes = types.InlineKeyboardButton("Да", callback_data="Да")
+            no = types.InlineKeyboardButton("Нет", callback_data="Нет")
+            markup.row(yes, no)
+
+            bot.send_message(message.chat.id, f"Хотел бы ты повторить этот опыт/посоветовать его другу?", reply_markup=markup)
+        
+        if callback.data == "Да" or callback.data == "Нет":
+            markup = types.InlineKeyboardMarkup()
+            btn1 = types.InlineKeyboardButton("👎1", callback_data="1rate")
+            btn2= types.InlineKeyboardButton("2", callback_data="2rate")
+            btn3 = types.InlineKeyboardButton("3", callback_data="3rate")
+            btn4 = types.InlineKeyboardButton("4", callback_data="4rate")
+            btn5 = types.InlineKeyboardButton("5", callback_data="5rate")
+            btn6 = types.InlineKeyboardButton("6", callback_data="6rate")
+            btn7 = types.InlineKeyboardButton("7", callback_data="7rate")
+            btn8 = types.InlineKeyboardButton("8", callback_data="8rate")
+            btn9 = types.InlineKeyboardButton("9", callback_data="9rate")
+            btn10 = types.InlineKeyboardButton("🌟10", callback_data="10rate")
+            markup.row(btn1, btn2, btn3)
+            markup.row(btn4, btn5, btn6)
+            markup.row(btn7, btn8, btn9)
+            markup.row(btn10)
+
+            bot.send_message(message.chat.id, "Оцени как ты справился с этим опытом по 10-бальной шкале", reply_markup=markup)
+
+
+        rates = ["1rate","2rate","3rate","4rate","5rate","6rate","7rate","8rate","9rate","10rate",]            
+
+        if callback.data in rates:
+            markup = types.ReplyKeyboardMarkup()
+            send = types.KeyboardButton("📩Отправить")
+            cancel = types.KeyboardButton("🙅‍♂️Отменить")
+            
+            markup.row(send, cancel)
+            
+            bot.send_message(message.chat.id, "Отправить форму?", reply_markup=markup)
+            
         if callback.data == "10":
             pass
 
@@ -108,14 +172,13 @@ def on_click3(message):
         btn5 = types.InlineKeyboardButton("Быть упорным", callback_data="Быть-упорным")
         btn6 = types.InlineKeyboardButton("Работать в команде", callback_data="Командная-работа")
         btn7 = types.InlineKeyboardButton("Уметь планировать", callback_data="Уметь-планировать")
-        btn8 = types.InlineKeyboardButton("Осознавать важноть глобального мышления", callback_data="Глобальное-мышление")
+        btn8 = types.InlineKeyboardButton("Осознавать важность глобального мышления", callback_data="Глобальное-мышление")
         btn9 = types.InlineKeyboardButton("Осознавать важность этических норм", callback_data="Этические-нормы")
         btn10 = types.InlineKeyboardButton("Уметь принимать решения", callback_data="Принимать-решения")
         btn11 = types.InlineKeyboardButton("Нести ответственность за решение", callback_data="Ответственность-решение")
         btn12 = types.InlineKeyboardButton("Оценивать сильные стороны и точки роста", callback_data="Сильные-стороны")
         btn13 = types.InlineKeyboardButton("Верить в собственную эффективность", callback_data="Эффективность")
-        
-        btns = ["Мыслить", "Коммуницировать", "Уметь-рисковать", "Быть-гибким", "Быть-упорным", "Командная-работа", "Уметь-планировать", "Глобальное-мышление", "Этические-нормы", "Принимать-решения", "Ответственность-решение", "Сильные-стороны", "Эффективность"]
+        btn14 = types.InlineKeyboardButton("✅Готово", callback_data="✅Готово")
         
         markup.row(btn1, btn2)
         markup.row(btn3, btn4)
@@ -127,42 +190,8 @@ def on_click3(message):
         markup.row(btn11)
         markup.row(btn12)
         markup.row(btn13)
+        markup.row(btn14)
         
         bot.send_message(message.chat.id, "Какой/какие skill/skills удалось прокачать во время планирования и реализации опыта?", reply_markup=markup)
-        btns_callbacks = {
-            btn1.callback_data: btn1.text,
-            btn2.callback_data: btn2.text,
-            btn3.callback_data: btn3.text,
-            btn4.callback_data: btn4.text,
-            btn5.callback_data: btn5.text,
-            btn6.callback_data: btn6.text,
-            btn7.callback_data: btn7.text,
-            btn8.callback_data: btn8.text,
-            btn9.callback_data: btn9.text,
-            btn10.callback_data: btn10.text,
-            btn11.callback_data: btn11.text,
-            btn12.callback_data: btn12.text,
-            btn13.callback_data: btn13.text,
-        }
-
-        @bot.callback_query_handler(func=lambda callback: True)
-        def callback_message2(callback):
-            btns_callbacks = {
-            btn1.callback_data: btn1.text,
-            btn2.callback_data: btn2.text,
-            btn3.callback_data: btn3.text,
-            btn4.callback_data: btn4.text,
-            btn5.callback_data: btn5.text,
-            btn6.callback_data: btn6.text,
-            btn7.callback_data: btn7.text,
-            btn8.callback_data: btn8.text,
-            btn9.callback_data: btn9.text,
-            btn10.callback_data: btn10.text,
-            btn11.callback_data: btn11.text,
-            btn12.callback_data: btn12.text,
-            btn13.callback_data: btn13.text,
-            }
-            if callback.data == "Мыслить":
-                print(btns_callbacks) # по сути я обращаюсь по колбеку к тексту первой кнопки и должен получить "Мыслить"
-
+       
 bot.polling(non_stop=True) # постоянное выполнение кода
