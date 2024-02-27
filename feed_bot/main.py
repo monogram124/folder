@@ -1,7 +1,6 @@
 import telebot
-import webbrowser   
 from telebot import types
-
+import sqlite3
 
 bot = telebot.TeleBot("6400448974:AAEhI-uuoUsnuLUJdLsblgeBzotrFpysJu4")
 
@@ -92,11 +91,10 @@ def on_click(message):
 
             markup.add(rdy_btn)
 
-            bot.send_message(message.chat.id, "Что именно ты сделал?", reply_markup=markup)
+            bot.send_message(callback.message.chat.id, "Что именно ты сделал?", reply_markup=markup)
 
             bot.register_next_step_handler(message, mid_on_click5)
             
-
         btns = ["Мыслить", "Коммуницировать", "Уметь-рисковать", "Быть-гибким", "Быть-упорным", "Командная-работа", "Уметь-планировать", "Глобальное-мышление", "Этические-нормы", "Принимать-решения", "Ответственность-решение", "Сильные-стороны", "Эффективность"]
         callback_text = {
             "Мыслить": "Мыслить",
@@ -176,28 +174,171 @@ def on_click(message):
 
             markup.add(rdy_btn)
 
-            bot.send_message(message.chat.id, "Что именно ты сделал?", reply_markup=markup)
+            bot.send_message(callback.message.chat.id, "Что именно ты сделал?", reply_markup=markup)
 
             bot.register_next_step_handler(message, mid_on_click10)
 
 
         if callback.data == "15":
-            pass            
-        
+            markup = types.ReplyKeyboardMarkup()
+            rdy_btn = types.KeyboardButton("✅Готово")
+
+            markup.add(rdy_btn)
+            bot.send_message(callback.message.chat.id, "Что именно ты сделал?", reply_markup=markup)
+
+            bot.register_next_step_handler(message, mid_on_click15)
+
+        if callback.data == "✅Я готов":
+            markup = types.ReplyKeyboardMarkup()
+            rdy_btn = types.KeyboardButton("✅Готово")
+
+            markup.add(rdy_btn)
+            bot.send_message(message.chat.id, "Как именно ты прокачал выбранный скил (или скилы)?", reply_markup=markup)
+
+            bot.register_next_step_handler(message, mid_on_click15_skills)
+
+        team_work_15 = ["удалась-15", "не-удалась-15", "не-относится-15"]
+
+        if callback.data in team_work_15:
+            markup = types.InlineKeyboardMarkup()
+            btn1 = types.InlineKeyboardButton("👎1", callback_data="1rate")
+            btn2= types.InlineKeyboardButton("2", callback_data="2rate")
+            btn3 = types.InlineKeyboardButton("3", callback_data="3rate")
+            btn4 = types.InlineKeyboardButton("4", callback_data="4rate")
+            btn5 = types.InlineKeyboardButton("5", callback_data="5rate")
+            btn6 = types.InlineKeyboardButton("6", callback_data="6rate")
+            btn7 = types.InlineKeyboardButton("7", callback_data="7rate")
+            btn8 = types.InlineKeyboardButton("8", callback_data="8rate")
+            btn9 = types.InlineKeyboardButton("9", callback_data="9rate")
+            btn10 = types.InlineKeyboardButton("🌟10", callback_data="10rate")
+            markup.row(btn1, btn2, btn3)
+            markup.row(btn4, btn5, btn6)
+            markup.row(btn7, btn8, btn9)
+            markup.row(btn10)   
+
+            bot.send_message(message.chat.id, "Оцени как ты справился с этим опытом по 10-бальной шкале", reply_markup=markup)
+
 @bot.message_handler()
 def mid_on_click5(message):
-    if message.text != " ":
+    if message.text != "":
         bot.register_next_step_handler(message, on_click5)
 
 @bot.message_handler()
 def mid_on_click10(message):
-    if message.text != " ":
+    if message.text != "":
         bot.register_next_step_handler(message, on_click10)
 
 @bot.message_handler()
 def mid_on_click10_skills(message):
-    if message.text != " ":
+    if message.text != "":
         bot.register_next_step_handler(message, on_click10_skills)
+
+@bot.message_handler()
+def mid_on_click15(message):
+    if message.text != "":
+        bot.register_next_step_handler(message, on_click15)
+
+@bot.message_handler()
+def mid_on_click15_skills(message):
+    if message.text != "":
+        bot.register_next_step_handler(message, on_click15_skills)
+
+@bot.message_handler()
+def on_click15_skills(message):
+    if message.text == "✅Готово":
+        markup = types.ReplyKeyboardMarkup()
+        rdy_btn = types.KeyboardButton("✅Готово")
+
+        markup.add(rdy_btn)
+
+        bot.send_message(message.chat.id, "Столкнулся ли ты со сложностями при планировании или во время реализации опыта?", reply_markup=markup)
+        bot.register_next_step_handler(message, mid_on_click15_difficult)
+
+@bot.message_handler()
+def mid_on_click15_difficult(message):
+    if message.text != "":
+        bot.register_next_step_handler(message, on_click15_difficult)
+
+@bot.message_handler()
+def on_click15_difficult(message):
+    if message.text == "✅Готово":
+        markup = types.ReplyKeyboardMarkup()
+        rdy_btn = types.KeyboardButton("✅Готово")
+
+        markup.add(rdy_btn)
+
+        bot.send_message(message.chat.id, "Что стало мотивацией для реализации опыта?", reply_markup=markup)
+        bot.register_next_step_handler(message, mid_on_click15_motivation)
+
+@bot.message_handler()
+def mid_on_click15_motivation(message):
+    if message.text != "":
+        bot.register_next_step_handler(message, on_click15_motivation)
+
+@bot.message_handler()
+def on_click15_motivation(message):
+    if message.text == "✅Готово":
+        markup = types.ReplyKeyboardMarkup()
+        rdy_btn = types.KeyboardButton("✅Готово")
+
+        markup.add(rdy_btn)
+        
+        bot.send_message(message.chat.id, "Опиши свой самый успешный момент в работе")
+        bot.register_next_step_handler(message, mid_on_click15_success)
+
+@bot.message_handler()
+def mid_on_click15_success(message):
+    if message.text != "":
+        bot.register_next_step_handler(message, on_click15_success)
+
+@bot.message_handler()
+def on_click15_success(message):
+    if message.text == "✅Готово":
+        markup = types.InlineKeyboardMarkup()
+        btn1 = types.InlineKeyboardButton("К этому опыту не относится", callback_data="не-относится-15")
+        btn2 = types.InlineKeyboardButton("Работа в команде не удалась", callback_data="не-удалась-15")
+        btn3 = types.InlineKeyboardButton("Работа в команде удалась", callback_data="удалась-15")
+
+        markup.row(btn1)
+        markup.row(btn2)
+        markup.row(btn3)
+        
+        bot.send_message(message.chat.id, "Удалось ли поработать в команде?", reply_markup=markup)
+
+
+@bot.message_handler()
+def on_click15(message):
+    if message.text == "✅Готово":
+        markup = types.InlineKeyboardMarkup()
+        btn1 = types.InlineKeyboardButton("Мыслить", callback_data="Мыслить")
+        btn2 = types.InlineKeyboardButton("Коммуницировать", callback_data="Коммуницировать")
+        btn3 = types.InlineKeyboardButton("Уметь рисковать", callback_data="Уметь-рисковать")
+        btn4 = types.InlineKeyboardButton("Быть гибким", callback_data="Быть-гибким")
+        btn5 = types.InlineKeyboardButton("Быть упорным", callback_data="Быть-упорным")
+        btn6 = types.InlineKeyboardButton("Работать в команде", callback_data="Командная-работа")
+        btn7 = types.InlineKeyboardButton("Уметь планировать", callback_data="Уметь-планировать")
+        btn8 = types.InlineKeyboardButton("Осознавать важность глобального мышления", callback_data="Глобальное-мышление")
+        btn9 = types.InlineKeyboardButton("Осознавать важность этических норм", callback_data="Этические-нормы")
+        btn10 = types.InlineKeyboardButton("Уметь принимать решения", callback_data="Принимать-решения")
+        btn11 = types.InlineKeyboardButton("Нести ответственность за решение", callback_data="Ответственность-решение")
+        btn12 = types.InlineKeyboardButton("Оценивать сильные стороны и точки роста", callback_data="Сильные-стороны")
+        btn13 = types.InlineKeyboardButton("Верить в собственную эффективность", callback_data="Эффективность")
+        btn14 = types.InlineKeyboardButton("✅Я готов", callback_data="✅Я готов")
+        
+        markup.row(btn1, btn2)
+        markup.row(btn3, btn4)
+        markup.row(btn5, btn6)
+        markup.row(btn7)
+        markup.row(btn8)
+        markup.row(btn9)
+        markup.row(btn10)
+        markup.row(btn11)
+        markup.row(btn12)
+        markup.row(btn13)
+        markup.row(btn14)
+        
+        bot.send_message(message.chat.id, "Какой/какие skill/skills удалось прокачать во время планирования и реализации опыта?", reply_markup=markup)
+
 
 @bot.message_handler()
 def on_click10_skills(message):
@@ -212,7 +353,7 @@ def on_click10_skills(message):
 
 @bot.message_handler()
 def mid_on_click10_difficult(message):
-    if message.text != " ":
+    if message.text != "":
         bot.register_next_step_handler(message, on_click10_difficult)
 
 @bot.message_handler()
