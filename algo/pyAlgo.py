@@ -36,6 +36,9 @@ def quick_sort(nums):
 # БИНАРНЫЙ ПОИСК
 
 def binary_search(arr, target):
+    if len(nums) <= 1:
+        return nums
+
     left = 0
     right = len(arr) - 1
 
@@ -91,7 +94,6 @@ def bfs(graph, start):
     queue += graph[start]
     visited.add(start)
     result = []
-
 
     while queue:
         vertex = queue.popleft()
