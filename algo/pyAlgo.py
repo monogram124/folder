@@ -36,6 +36,9 @@ def quick_sort(nums):
 # БИНАРНЫЙ ПОИСК
 
 def binary_search(arr, target):
+    if len(nums) <= 1:
+        return nums
+
     left = 0
     right = len(arr) - 1
 
@@ -85,36 +88,25 @@ def merge_sort(nums):
     return merge_two_lists(left, right)
 
 # ПОИСК В ШИРИНУ
-def bfs(graph, start):
+# bfs - алгоритм для нахождения кратчайшего пути меджу двумя веринами в графе
+# добавляем в очередь первый элемент, а так же создаем сет для уже посещенных элементов
+# пока очерещдь не пуста мы вытаскиваем из нее первый элемент и если он не поосещен делаем следующие проверки:
+# если цель возращаем True, если нет добавляем в очередь всех его соседей и опять вытаскиваем первый элемент, пока весь граф не будет пройден
+def bfs(start: int, target: int, graph: dict[int]) -> bool:
     queue = deque()
+    queue += [start]
     visited = set()
-    queue += graph[start]
-    visited.add(start)
-    result = []
-
 
     while queue:
-        vertex = queue.popleft()
-        result.append(vertex)
+        node = queue.popleft()
+        if node not in visited:
+            if node == target:
+                return True
+            else:
+                queue += graph[node]
+                visited.add(node)
 
-        for neighbor in graph[vertex]:
-            if neighbor not in visited:
-                queue.append(neighbor)
-                visited.add(neighbor)
+    return False
 
-    return result
-
-def bfs(graph, start):
-    queue = deque()
-    visited = set()
-    queue += graph[start]
-    visited.add(start)
-    
-    while queue:
-        vertex = queue.popleft()
-        for neighbor in graph[vertex]:
-            if neighbor not in visited:
-                queue.append(neighbor)
-                visited.add(neighbor)
-
-    
+# АЛГОРИТМ ДЕЙКСТРЫ
+# 
