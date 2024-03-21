@@ -4,11 +4,11 @@ from PIL import ImageTk, Image
 class Window:
     def __init__(self):
         self.win = Tk()
-        self.photo = Image.open("C:/Users/213-9/Downloads/folder/школа/clock.png")
+        self.photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/clock.png")
         self.resize_photo = self.photo.resize((50, 50))
         self.photo = ImageTk.PhotoImage(self.resize_photo)
 
-        self.photo2 = Image.open("C:/Users/213-9/Downloads/folder/школа/shamil.png")
+        self.photo2 = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/shamil.png")
         self.resize_photo2 = self.photo2.resize((300, 920))
         self.photo2 = ImageTk.PhotoImage(self.resize_photo2)
         
