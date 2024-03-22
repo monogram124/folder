@@ -50,6 +50,24 @@ class Game:
             "scissors": self.scissors_photo
         }
 
+        self.menu_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/menu.png")
+        self.resize_photo_menu = self.menu_photo.resize((85, 85))
+        self.menu_photo = ImageTk.PhotoImage(self.resize_photo_menu)
+
+        self.menu_btn = Button(self.win, image=self.menu_photo, width=80, height=80, command=self.menu, borderwidth=0)
+
+    def on_enter(self):
+        self.menu_btn.configure(bg="gray")
+    
+    def on_leave(self):
+        self.menu_btn.configure(bg="white")
+
+    def menu(self):
+        self.new_win = Tk()
+        self.new_win.title = "Меню"
+        self.new_win.geometry("400x300")
+        self.new_win.resizable((0, 0))
+
     def check_rock(self):
         player_sign = "rock"
         bot_sign = random.choice(self.signs)
@@ -100,13 +118,16 @@ class Game:
     def run(self):
         
         self.gamepad_lbl.grid(column=1, pady=80)
+        
         self.bot_lbl.grid(row=0, column=0)
+        
         self.rock_btn.grid(row=1, column=0, padx=50)
         self.paper_btn.grid(row=1, column=1, padx=50)
         self.scissors_btn.grid(row=1, column=2, padx=50)
+        self.menu_btn.grid(row=0, column=2)
         
         
         self.win.mainloop()
-        
+        self.new_win.mainloop()
 game = Game()
 game.run()
