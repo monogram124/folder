@@ -4,8 +4,17 @@ import sqlite3
 
 bot = telebot.TeleBot("6400448974:AAEhI-uuoUsnuLUJdLsblgeBzotrFpysJu4")
 
-@bot.message_handler(commands=["start"]) # обработка команды
+@bot.message_handler(commands=["start"])
 def start(message):
+    conn = sqlite3.connect("feed_bot.sql") # открываю соединение
+    cur = conn.cursor()
+
+    cur.execute("CREATE TABLE IF NOT EXISTS users (id int auto_inccrement primary key, name varchar(50), house varchar(50), points varchar(5), exp varchar(50), done varchar(50), skills varchar(170), did_it varchar(3), exactly varchar(100), difficulties varchar(100), motivation varchar(100), moment varchar(100), team varchar(100), result int)")
+    conn.commit() # синхронизация с базой данных
+    cur.close() # закрываю курсор
+    conn.close() # закрываю соединение
+
+
     markup = types.ReplyKeyboardMarkup()
     btn1 = types.KeyboardButton("✏️Заполнить форму")
     btn2 = types.KeyboardButton("🌐Сайт House System")
@@ -30,6 +39,7 @@ def on_click(message):
         markup.add(types.KeyboardButton("✅Готово"))
         
         bot.send_message(message.chat.id, "Имя Фамилия", reply_markup=markup)
+        bot.register_next_step_handler(message, user_name)
     
     if message.text == "🙅‍♂️Отменить":
         markup = types.ReplyKeyboardMarkup()
@@ -45,6 +55,16 @@ def on_click(message):
 
         markup.row(btn1, btn2, btn3, btn4)
         bot.send_message(message.chat.id, "Выберите House", reply_markup=markup)
+
+def user_name(message):
+    name = message.text
+
+    conn = sqlite3.connect("feed_bot.sql")
+    cur = conn.cursor()
+    cur.execute(f"INSERT INTO users (name) VALUES ('{name}')")
+    conn.commit()
+    cur.close()
+    conn.close()
 
 
 @bot.callback_query_handler(func=lambda callback: True)
@@ -73,6 +93,16 @@ def callback_message(callback):
         markup.row(btn7)
         markup.row(btn8)
 
+        conn = sqlite3.connect("feed_bot.sql")
+        cur = conn.cursor()
+        house = callback.data
+
+        cur.execute(f"INSERT INTO users (house) VALUES ('{house}')")
+        conn.commit()
+
+        cur.close()
+        conn.close()
+
         bot.edit_message_text("Какой опыт ты получил?", callback.message.chat.id, callback.message.message_id, reply_markup=markup)
 
     if callback.data in exp:
@@ -82,6 +112,16 @@ def callback_message(callback):
         
         markup.row(btn1, btn2, btn3)
         
+        conn = sqlite3.connect("feed_bot.sql")
+        cur = conn.cursor()
+        experience = callback.data
+
+        cur.execute(f"INSERT INTO users (exp) VALUES ('{experience}')")
+        conn.commit()
+
+        cur.close()
+        conn.close()
+
         bot.edit_message_text("Кол-во полученных баллов", callback.message.chat.id, callback.message.message_id, reply_markup=markup)
 
     if callback.data == "5":
@@ -89,9 +129,18 @@ def callback_message(callback):
         rdy_btn = types.KeyboardButton("✅Готово")
 
         markup.add(rdy_btn)
+        
+        conn = sqlite3.connect("feed_bot.sql")
+        cur = conn.cursor()
+        points = callback.data
+        
+        cur.execute(f"INSERT INTO users (points) VALUES ('{points}')")
+
+        cur.close()
+        conn.close()
 
         bot.send_message(callback.message.chat.id, "Что именно ты сделал?", reply_markup=markup)
-
+        
         bot.register_next_step_handler(callback.message, mid_on_click5)
         
     btns = ["Мыслить", "Коммуницировать", "Уметь-рисковать", "Быть-гибким", "Быть-упорным", "Командная-работа", "Уметь-планировать", "Глобальное-мышление", "Этические-нормы", "Принимать-решения", "Ответственность-решение", "Сильные-стороны", "Эффективность"]
@@ -122,7 +171,7 @@ def callback_message(callback):
         markup.row(yes, no)
 
         bot.send_message(callback.message.chat.id, f"Хотел бы ты повторить этот опыт/посоветовать его другу?", reply_markup=markup)
-
+        
     if callback.data == "✅Готов":
         markup = types.ReplyKeyboardMarkup()
         btn1 = types.KeyboardButton("✅Готово")
@@ -150,6 +199,13 @@ def callback_message(callback):
         markup.row(btn4, btn5, btn6)
         markup.row(btn7, btn8, btn9)
         markup.row(btn10)   
+
+        conn = sqlite3.connect("feed_bot.sql")
+        cur = conn.cursor()
+        did_it = callback.data
+        cur.execute(f"INSERT INTO users (did_it) VALUES ('{did_it}')")
+        cur.close()
+        conn.close()
 
         bot.send_message(callback.message.chat.id, "Оцени как ты справился с этим опытом по 10-бальной шкале", reply_markup=markup)
 
@@ -219,6 +275,15 @@ def callback_message(callback):
 
 @bot.message_handler()
 def mid_on_click5(message):
+    conn = sqlite3.connect("feed_bot.sql")
+    cur = conn.cursor()
+    done = message.text
+
+    cur.execute(f"INSERT INTO users (done) VALUES ('{done}')")
+    
+    cur.close()
+    conn.close()
+
     if message.text != "":
         bot.register_next_step_handler(message, on_click5)
 
@@ -435,7 +500,7 @@ def on_click5(message):
         markup.row(btn12)
         markup.row(btn13)
         markup.row(btn14)
-        
+        # придумать как добавлять сктлы в базу данных
         bot.send_message(message.chat.id, "Какой/какие skill/skills удалось прокачать во время планирования и реализации опыта?", reply_markup=markup)
        
 bot.polling(non_stop=True) # постоянное выполнение кода

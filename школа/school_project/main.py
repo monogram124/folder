@@ -64,10 +64,10 @@ class Game:
 
     def menu(self):
         self.new_win = Tk()
-        self.new_win.title = "Меню"
+        self.new_win.title("Editional Menu")
         self.new_win.geometry("400x300")
-        self.new_win.resizable((0, 0))
-
+        self.new_win.resizable(0, 0)
+        
     def check_rock(self):
         player_sign = "rock"
         bot_sign = random.choice(self.signs)
@@ -129,5 +129,6 @@ class Game:
         
         self.win.mainloop()
         self.new_win.mainloop()
+
 game = Game()
 game.run()
