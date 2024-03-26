@@ -12,23 +12,23 @@ class Game:
         
         self.signs = ("rock", "paper", "scissors")
 
-        self.rock_photo = ImageTk.PhotoImage(file="C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/rock.png")
-        self.paper_photo = ImageTk.PhotoImage(file="C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/paper.png")
-        self.scissors_photo = ImageTk.PhotoImage(file="C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/scissors.png")
+        self.rock_photo = ImageTk.PhotoImage(file="C:/Users/213-9/Downloads/folder/школа/school_project/img/rock.png")
+        self.paper_photo = ImageTk.PhotoImage(file="C:/Users/213-9/Downloads/folder/школа/school_project/img/paper.png")
+        self.scissors_photo = ImageTk.PhotoImage(file="C:/Users/213-9/Downloads/folder/школа/school_project/img/scissors.png")
         
-        self.gamepad_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/gamepad.jpg")
+        self.gamepad_photo = Image.open("C:/Users/213-9/Downloads/folder/школа/school_project/img/gamepad.jpg")
         self.resize_photo_gamepad = self.gamepad_photo.resize((150, 220))
         self.gamepad_photo = ImageTk.PhotoImage(self.resize_photo_gamepad)
 
-        self.tick_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/tick.jpg")
+        self.tick_photo = Image.open("C:/Users/213-9/Downloads/folder/школа/school_project/img/tick.jpg")
         self.resize_photo_tick = self.tick_photo.resize((150, 220))
         self.tick_photo = ImageTk.PhotoImage(self.resize_photo_tick)
 
-        self.cross_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/cross.jpg")
+        self.cross_photo = Image.open("C:/Users/213-9/Downloads/folder/школа/school_project/img/cross.jpg")
         self.resize_photo_cross = self.cross_photo.resize((150, 220))
         self.cross_photo = ImageTk.PhotoImage(self.resize_photo_cross)
 
-        self.flag_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/flag.jpg")
+        self.flag_photo = Image.open("C:/Users/213-9/Downloads/folder/школа/school_project/img/flag.jpg")
         self.resize_photo_flag = self.flag_photo.resize((150, 220))
         self.flag_photo = ImageTk.PhotoImage(self.resize_photo_flag)
 
@@ -38,7 +38,7 @@ class Game:
 
         self.gamepad_lbl = Label(self.win, image=self.gamepad_photo, width=130, height=195)
 
-        self.bot_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/robot.jpg")
+        self.bot_photo = Image.open("C:/Users/213-9/Downloads/folder/школа/school_project/img/robot.jpg")
         self.resize_photo_bot = self.bot_photo.resize((150, 220))
         self.bot_photo = ImageTk.PhotoImage(self.resize_photo_bot)
 
@@ -50,71 +50,56 @@ class Game:
             "scissors": self.scissors_photo
         }
 
-        self.menu_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/menu.png")
+        self.menu_photo = Image.open("C:/Users/213-9/Downloads/folder/школа/school_project/img/menu.png")
         self.resize_photo_menu = self.menu_photo.resize((85, 85))
         self.menu_photo = ImageTk.PhotoImage(self.resize_photo_menu)
 
         self.menu_btn = Button(self.win, image=self.menu_photo, width=80, height=80, command=self.menu, borderwidth=0)
-
-    def on_enter(self):
-        self.menu_btn.configure(bg="gray")
-    
-    def on_leave(self):
-        self.menu_btn.configure(bg="white")
 
     def menu(self):
         self.new_win = Tk()
         self.new_win.title("Editional Menu")
         self.new_win.geometry("400x300")
         self.new_win.resizable(0, 0)
+    
+    def check(self, player_sign):
+        bot_sign = random.choice(self.signs)
+        
+        if bot_sign == "paper" and player_sign == "rock":
+            self.gamepad_lbl.config(image=self.cross_photo) # LOSE
+            self.bot_lbl.config(image=self.bot_signs[bot_sign])
+        elif bot_sign == "scissors" and player_sign == "rock":
+            self.gamepad_lbl.config(image=self.tick_photo) # WIN
+            self.bot_lbl.config(image=self.bot_signs[bot_sign])
+        
+        if bot_sign == "rock" and player_sign == "scissors":
+            self.gamepad_lbl.config(image=self.cross_photo) # LOSE
+            self.bot_lbl.config(image=self.bot_signs[bot_sign])
+            
+        elif bot_sign == "paper" and player_sign == "scissors":
+            self.gamepad_lbl.config(image=self.tick_photo)
+            self.bot_lbl.config(image=self.bot_signs[bot_sign])
+        
+        if bot_sign == "rock" and player_sign == "paper":
+            self.gamepad_lbl.config(image=self.tick_photo) # WIN
+            self.bot_lbl.config(image=self.bot_signs[bot_sign])
+        elif bot_sign == "scissors" and player_sign == "paper":
+            self.gamepad_lbl.config(image=self.cross_photo) # LOSE
+            self.bot_lbl.config(image=self.bot_signs[bot_sign])
+        
+        if player_sign == bot_sign:
+            self.gamepad_lbl.config(image=self.flag_photo) # DRAW
+            self.bot_lbl.config(image=self.bot_signs[bot_sign])
         
     def check_rock(self):
-        player_sign = "rock"
-        bot_sign = random.choice(self.signs)
-
-        if bot_sign == "paper":
-            self.gamepad_lbl.config(image=self.cross_photo) # LOSE
-            self.bot_lbl.config(image=self.bot_signs[bot_sign])
-        elif bot_sign == "scissors":
-            self.gamepad_lbl.config(image=self.tick_photo) # WIN
-            self.bot_lbl.config(image=self.bot_signs[bot_sign])
-
-        if player_sign == bot_sign:
-            self.gamepad_lbl.config(image=self.flag_photo) # DRAW
-            self.bot_lbl.config(image=self.bot_signs[bot_sign])
+        self.check("rock")
 
     def check_paper(self):
-        player_sign = "paper"
-        bot_sign = random.choice(self.signs)
-
-        if bot_sign == "rock":
-            self.gamepad_lbl.config(image=self.tick_photo) # WIN
-            self.bot_lbl.config(image=self.bot_signs[bot_sign])
-
-        elif bot_sign == "scissors":
-            self.gamepad_lbl.config(image=self.cross_photo) # LOSE
-            self.bot_lbl.config(image=self.bot_signs[bot_sign])
-
-        if player_sign == bot_sign:
-            self.gamepad_lbl.config(image=self.flag_photo) # DRAW
-            self.bot_lbl.config(image=self.bot_signs[bot_sign])
-    
+        self.check("paper")
+       
     def check_scissors(self):
-        player_sign = "scissors"
-        bot_sign = random.choice(self.signs)
-
-        if bot_sign == "rock":
-            self.gamepad_lbl.config(image=self.cross_photo) # LOSE
-            self.bot_lbl.config(image=self.bot_signs[bot_sign])
-
-        elif bot_sign == "paper":
-            self.gamepad_lbl.config(image=self.tick_photo) # WIN
-            self.bot_lbl.config(image=self.bot_signs[bot_sign])
-
-        if player_sign == bot_sign:
-            self.gamepad_lbl.config(image=self.flag_photo) # DRAW
-            self.bot_lbl.config(image=self.bot_signs[bot_sign])
-
+        self.check("scissors")
+        
     def run(self):
         
         self.gamepad_lbl.grid(column=1, pady=80)
