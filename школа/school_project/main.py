@@ -61,6 +61,9 @@ class Game:
         self.new_win.title("Editional Menu")
         self.new_win.geometry("400x300")
         self.new_win.resizable(0, 0)
+        self.config(bg="#FFFFFF")
+        
+        sellf.te
     
     def check(self, player_sign):
         bot_sign = random.choice(self.signs)
