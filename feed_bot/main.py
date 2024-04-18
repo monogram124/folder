@@ -9,7 +9,7 @@ def start(message):
     conn = sqlite3.connect("feed_bot.sql") # открываю соединение
     cur = conn.cursor()
 
-    cur.execute("CREATE TABLE IF NOT EXISTS users (id int auto_inccrement primary key, name varchar(50), house varchar(50), points varchar(5), exp varchar(50), done varchar(50), skills varchar(170), did_it varchar(3), exactly varchar(100), difficulties varchar(100), motivation varchar(100), moment varchar(100), team varchar(100), result int)")
+    cur.execute("CREATE TABLE IF NOT EXISTS users (id int auto_increment primary key, name varchar(50), house varchar(50), points varchar(5), exp varchar(50), done varchar(50), skills varchar(170), did_it varchar(3), exactly varchar(100), difficulties varchar(100), motivation varchar(100), moment varchar(100), team varchar(100), result int)")
     conn.commit() # синхронизация с базой данных
     cur.close() # закрываю курсор
     conn.close() # закрываю соединение

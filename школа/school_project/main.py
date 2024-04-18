@@ -12,23 +12,23 @@ class Game:
         
         self.signs = ("rock", "paper", "scissors")
 
-        self.rock_photo = ImageTk.PhotoImage(file="C:/Users/213-9/Downloads/folder/школа/school_project/img/rock.png")
-        self.paper_photo = ImageTk.PhotoImage(file="C:/Users/213-9/Downloads/folder/школа/school_project/img/paper.png")
-        self.scissors_photo = ImageTk.PhotoImage(file="C:/Users/213-9/Downloads/folder/школа/school_project/img/scissors.png")
+        self.rock_photo = ImageTk.PhotoImage(file="C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/rock.png")
+        self.paper_photo = ImageTk.PhotoImage(file="C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/paper.png")
+        self.scissors_photo = ImageTk.PhotoImage(file="C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/scissors.png")
         
-        self.gamepad_photo = Image.open("C:/Users/213-9/Downloads/folder/школа/school_project/img/gamepad.jpg")
+        self.gamepad_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/gamepad.jpg")
         self.resize_photo_gamepad = self.gamepad_photo.resize((150, 220))
         self.gamepad_photo = ImageTk.PhotoImage(self.resize_photo_gamepad)
 
-        self.tick_photo = Image.open("C:/Users/213-9/Downloads/folder/школа/school_project/img/tick.jpg")
+        self.tick_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/tick.jpg")
         self.resize_photo_tick = self.tick_photo.resize((150, 220))
         self.tick_photo = ImageTk.PhotoImage(self.resize_photo_tick)
 
-        self.cross_photo = Image.open("C:/Users/213-9/Downloads/folder/школа/school_project/img/cross.jpg")
+        self.cross_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/cross.jpg")
         self.resize_photo_cross = self.cross_photo.resize((150, 220))
         self.cross_photo = ImageTk.PhotoImage(self.resize_photo_cross)
 
-        self.flag_photo = Image.open("C:/Users/213-9/Downloads/folder/школа/school_project/img/flag.jpg")
+        self.flag_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/flag.jpg")
         self.resize_photo_flag = self.flag_photo.resize((150, 220))
         self.flag_photo = ImageTk.PhotoImage(self.resize_photo_flag)
 
@@ -38,7 +38,7 @@ class Game:
 
         self.gamepad_lbl = Label(self.win, image=self.gamepad_photo, width=130, height=195)
 
-        self.bot_photo = Image.open("C:/Users/213-9/Downloads/folder/школа/school_project/img/robot.jpg")
+        self.bot_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/robot.jpg")
         self.resize_photo_bot = self.bot_photo.resize((150, 220))
         self.bot_photo = ImageTk.PhotoImage(self.resize_photo_bot)
 
@@ -50,7 +50,7 @@ class Game:
             "scissors": self.scissors_photo
         }
 
-        self.menu_photo = Image.open("C:/Users/213-9/Downloads/folder/школа/school_project/img/menu.png")
+        self.menu_photo = Image.open("C:/Users/HYPERPC/Downloads/folder/школа/school_project/img/menu.png")
         self.resize_photo_menu = self.menu_photo.resize((85, 85))
         self.menu_photo = ImageTk.PhotoImage(self.resize_photo_menu)
 
@@ -63,7 +63,6 @@ class Game:
         self.new_win.resizable(0, 0)
         self.config(bg="#FFFFFF")
         
-        sellf.te
     
     def check(self, player_sign):
         bot_sign = random.choice(self.signs)
@@ -113,7 +112,6 @@ class Game:
         self.paper_btn.grid(row=1, column=1, padx=50)
         self.scissors_btn.grid(row=1, column=2, padx=50)
         self.menu_btn.grid(row=0, column=2)
-        
         
         self.win.mainloop()
         self.new_win.mainloop()
