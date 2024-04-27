@@ -1,3 +1,118 @@
+# связный список
+
+class Node:
+    def __init__(self, val, next = None):
+        self.val = val
+        self.next = next
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+        self.tail = None
+
+    def append(self, val):
+        newNode = Node(val)
+
+        if not self.head or not self.tail:
+            self.head, self.tail = newNode, newNode
+
+            return
+    
+        self.tail.next = newNode
+        self.tail = newNode
+
+    def print(self):
+        nodes = []
+
+        curNode = self.head
+
+        while curNode:
+            nodes.append(curNode.val)
+            curNode = curNode.next
+
+        return nodes
+    
+    def prepend(self, val):
+        newNode = Node(val, self.head)
+
+        newNode = self.head
+
+        if not self.tail:
+            self.tail = newNode
+
+    def find(self, val):
+        if not self.head:
+            return None
+        
+        curNode = self.head
+
+        while curNode:
+            if curNode.val == val:
+                return curNode
+            
+            curNode = curNode.next
+        
+        return None
+    
+    def len(self):
+        curNode = self.head
+        counter = 0  
+
+        while curNode:
+            counter += 1
+            curNode = curNode.next
+
+        return counter
+    
+    def max(self):
+        maxNode = 0
+        curNode = self.head
+    
+        while curNode:
+            if curNode.val > maxNode:
+                maxNode = curNode
+
+            curNode = curNode.next
+
+        return maxNode
+    
+    def min(self):
+        minNode = float("inf")
+        curNode = self.head
+
+        while curNode:
+            if curNode.val < minNode:
+                minNode = curNode
+            
+            curNode = curNode.next
+
+        return minNode
+    
+    # def remove(self, val):
+
+
+    def insert(self, val, prev):
+        if not prev:
+            return None
+        
+        newNode = Node(val)
+
+        newNode.next = prev.next
+        prev.next = newNode
+
+        if newNode.next == None:
+            self.tail = newNode
+
+
+list = LinkedList()
+list.append(8)
+list.append(9)
+list.insert(12, list.find(8))
+list.append(3)
+
+print(list.print())
+print(list.find(9))
+
 from collections import deque
 
 # ГРАФЫ
@@ -46,26 +161,6 @@ graph = {
     7: []
 } 
 
-def bfs(graph, start):
-    queue = deque() # создали очередь
-    result = []
-    visited = set() # создали множество где будут все посещенные объекты храниться
-    queue += graph[start] # добавили в очередь всех соседей начального элемнта
-    visited.add(start) # сказали что уже посетили начальный элемент
-
-    while queue: # пока очередь не пуста
-        vertex = queue.popleft() # берем первую вершину из очереди
-        result.append(vertex)
-
-        for neighbor in graph[vertex]: # проходимся по всем ее соседям
-            if neighbor not in visited: # если сосед не был посещен 
-                queue.append(neighbor) # добавляем соседа в очередь и потом все заново пока не пройдемся по всему графу
-                visited.add(neighbor) # посетили соседа
-
-    return result # это не обязательно вообще создавать result, так для наглядности что мы прошлись по графу 
-
-print(bfs(graph, 1))
-
 # АЛГОРИТМ ДЕЙКСТРЫ
 # Алгоритм поиска в ширину справляется с задачей поиска кратчайшего пути(минимального кол-ва вершин через которые пройти для того чтобы попасть в цель)
 # но, если к каждому ребру привязать время в примере с маршруткой из книги или ВЕС
@@ -82,53 +177,4 @@ print(bfs(graph, 1))
 # цикл - это когда мы можем начать из одной вершины и потом вернуться в нее же, путь с обходом по циклу никогда не будет кратчайшим по скольку мы только будем добавлять к суммарному весу значения
 # а так же если мы используем алгоритм дейкстры в ненаправленных граффах мы фактически входим в цикл что не имеет смысла для этого алгоритма
 
-G = { # здесь хранится весь граф и веса ребер
-    "start": {"A": 6, "B": 2}, # чтобы назначить вес какому то ребру делаем это с помощью еще одной хеш-таблицы
-    "A": {"end": 1},
-    "B": {"A": 3, "end": 5},
-    "end": {}
-}
-
-C = { # здесь хранятся стоимости вершин
-    "A": 6,
-    "B": 2,
-    "end": float("inf")
-}
-
-P = { # здесь хранятся родители
-    "A": "start",
-    "B": "start",
-    "end": None
-}
-
-processed = []
-
-def find_lowest_cost_node(costs):
-    lowest_cost = float("inf")
-    lowest_cost_node = None
-
-    for node in costs:
-        cost = costs[node]
-        if cost < lowest_cost and node not in processed:
-            lowest_cost = cost
-            lowest_cost_node = node
-
-    return lowest_cost_node
-
-def dijkstra(graph, costs, parents):
-    node = find_lowest_cost_node(costs)
-    while node:
-        cost = costs[node]
-        neibhours = graph[node]
-
-        for n in neibhours.keys():
-            new_cost = cost + neibhours[n]
-            if costs[n] > new_cost:
-                costs[n] = new_cost
-                parents[n] = node
-        processed.append(node)
-        node = find_lowest_cost_node(costs)
-        
-    return processed
-
-print(dijkstra(G, C, P))
+# ДЕРЕВЬЯ
