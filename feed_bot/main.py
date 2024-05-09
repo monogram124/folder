@@ -3,14 +3,27 @@ from telebot import types
 import sqlite3
 
 bot = telebot.TeleBot("6400448974:AAEhI-uuoUsnuLUJdLsblgeBzotrFpysJu4")
+name = None
+# house_db = None
+# exp_db = None
+# points_db = None
+# done = None
+# skills = ()
+# exactly = None
+# difficulties = None
+# team_work_db = None
+# motivation = None
+# moment = None
+# result = None
+skills = ""
 
 @bot.message_handler(commands=["start"])
 def start(message):
     conn = sqlite3.connect("feed_bot.sql") # открываю соединение
     cur = conn.cursor()
 
-    cur.execute("CREATE TABLE IF NOT EXISTS users (id int auto_increment primary key, name varchar(50), house varchar(50), points varchar(5), exp varchar(50), done varchar(50), skills varchar(170), did_it varchar(3), exactly varchar(100), difficulties varchar(100), motivation varchar(100), moment varchar(100), team varchar(100), result int)")
-    conn.commit() # синхронизация с базой данных
+    cur.execute("CREATE TABLE IF NOT EXISTS users (id int auto_increment primary key, name varchar(50), house varchar(50), exp varchar(50), points varchar(5), done varchar(50), skills varchar(170), repeat varchar(3), exactly varchar(50), dificulties varchar(50), team_work varchar(50), motivation varchar(50), moment varchar(50), result varchar(2))")
+    conn.commit() # снхронизация с базой данных
     cur.close() # закрываю курсор
     conn.close() # закрываю соединение
 
@@ -34,7 +47,6 @@ def on_click(message):
     btn4 = types.InlineKeyboardButton("🐻‍❄️N", callback_data="north")
     
     if message.text == "✏️Заполнить форму":
-        
         markup = types.ReplyKeyboardMarkup()
         markup.add(types.KeyboardButton("✅Готово"))
         
@@ -49,6 +61,15 @@ def on_click(message):
         markup.add(btn1, btn2)
 
         bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи!", reply_markup=markup)
+    
+    if message.text == "📩Отправить": # просто я конченый долбаеб и забыл как работает эта проверка 
+        conn = sqlite3.connect("feed_bot.sql") # открываю соединение
+        cur = conn.cursor()
+
+        cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, repeat, exactly, dificulties, team_work, motivation, moment, result) VALUES ('{name}', '{house_db}', '{exp_db}', '{points_db}', '{done}', '{skills}', '{repeat}', '{exactly}', '{difficulties}', '{team_work_db}', '{motivation}', '{moment}', '{result}')")
+        conn.commit() # снхронизация с базой данных
+        cur.close() # закрываю курсор
+        conn.close() # закрываю соединение
 
     if message.text == "✅Готово" and message.text != "":
         # удаление из ReplyKeyboardMarkup кнопки "готово"
@@ -57,24 +78,34 @@ def on_click(message):
         bot.send_message(message.chat.id, "Выберите House", reply_markup=markup)
 
 def user_name(message):
+    global name
+    
     name = message.text
-
-    conn = sqlite3.connect("feed_bot.sql")
-    cur = conn.cursor()
-    cur.execute(f"INSERT INTO users (name) VALUES ('{name}')")
-    conn.commit()
-    cur.close()
-    conn.close()
-
+    
+@bot.message_handler()
+def check(message):
+    if message.text == "проверка":
+        print(name)
 
 @bot.callback_query_handler(func=lambda callback: True)
 def callback_message(callback):
+    global house_db
+    global exp_db
+    global points_db
+    global skills
+    global repeat
+    global team_work_db
+    global result
+
     markup = types.InlineKeyboardMarkup()
     
     house = ["east", "west", "north", "south"]
     exp = ["Опыт публичного выступления", "Социальный опыт", "Организаторский опыт", "Опыт творчества", "Опыт наставничества", "Спортивный опыт", "Опыт участника", "Академические достижения"]
 
     if callback.data in house:
+        
+        house_db = callback.data
+
         btn1 = types.InlineKeyboardButton("Опыт публичного выступления", callback_data="Опыт публичного выступления")
         btn2 = types.InlineKeyboardButton("Социальный опыт", callback_data="Социальный опыт")
         btn3 = types.InlineKeyboardButton("Организаторский опыт", callback_data="Организаторский опыт")
@@ -93,77 +124,56 @@ def callback_message(callback):
         markup.row(btn7)
         markup.row(btn8)
 
-        conn = sqlite3.connect("feed_bot.sql")
-        cur = conn.cursor()
-        house = callback.data
-
-        cur.execute(f"INSERT INTO users (house) VALUES ('{house}')")
-        conn.commit()
-
-        cur.close()
-        conn.close()
-
         bot.edit_message_text("Какой опыт ты получил?", callback.message.chat.id, callback.message.message_id, reply_markup=markup)
 
     if callback.data in exp:
+        exp_db = callback.data
         btn1 = types.InlineKeyboardButton("5", callback_data="5")
         btn2 = types.InlineKeyboardButton("10", callback_data="10")
         btn3 = types.InlineKeyboardButton("15", callback_data="15")
         
         markup.row(btn1, btn2, btn3)
         
-        conn = sqlite3.connect("feed_bot.sql")
-        cur = conn.cursor()
-        experience = callback.data
-
-        cur.execute(f"INSERT INTO users (exp) VALUES ('{experience}')")
-        conn.commit()
-
-        cur.close()
-        conn.close()
 
         bot.edit_message_text("Кол-во полученных баллов", callback.message.chat.id, callback.message.message_id, reply_markup=markup)
 
     if callback.data == "5":
+        points_db = callback.data
+
         markup = types.ReplyKeyboardMarkup()
         rdy_btn = types.KeyboardButton("✅Готово")
 
         markup.add(rdy_btn)
         
-        conn = sqlite3.connect("feed_bot.sql")
-        cur = conn.cursor()
-        points = callback.data
         
-        cur.execute(f"INSERT INTO users (points) VALUES ('{points}')")
-
-        cur.close()
-        conn.close()
 
         bot.send_message(callback.message.chat.id, "Что именно ты сделал?", reply_markup=markup)
         
         bot.register_next_step_handler(callback.message, mid_on_click5)
         
     btns = ["Мыслить", "Коммуницировать", "Уметь-рисковать", "Быть-гибким", "Быть-упорным", "Командная-работа", "Уметь-планировать", "Глобальное-мышление", "Этические-нормы", "Принимать-решения", "Ответственность-решение", "Сильные-стороны", "Эффективность"]
+    
     callback_text = {
         "Мыслить": "Мыслить",
-        "Коммуницировать": "Коммуницировать",
-        "Уметь-рисковать": "Уметь рисковать",
-        "Быть-гибким": "Быть гибким",
-        "Быть-упорным": "Быть упорным",
-        "Командная-работа": "Работать в команде",
-        "Уметь-планировать": "Уметь планировать",
-        "Глобальное-мышление": "Осознавать важность глобального мышления",
-        "Этические-нормы": "Осознавать важность этических норм",
-        "Принимать-решения": "Уметь принимать решения",
-        "Ответственность-решение": "Нести за отвественность за свои решения",
-        "Сильные-стороны": "Оценивать сильные стороны и точки роста",
-        "Эффективность": "Верить в собственную эффективность"
+        "Коммуницировать": "Коммуницировать, ",
+        "Уметь-рисковать": "Уметь рисковать, ",
+        "Быть-гибким": "Быть гибким, ",
+        "Быть-упорным": "Быть упорным, ",
+        "Командная-работа": "Работать в команде, ",
+        "Уметь-планировать": "Уметь планировать, ",
+        "Глобальное-мышление": "Осознавать важность глобального мышления, ",
+        "Этические-нормы": "Осознавать важность этических норм, ",
+        "Принимать-решения": "Уметь принимать решения, ",
+        "Ответственность-решение": "Нести за отвественность за свои решения, ",
+        "Сильные-стороны": "Оценивать сильные стороны и точки роста, ",
+        "Эффективность": "Верить в собственную эффективность, "
     }
 
-    # if callback.data in btns:
-    #     added.append(callback_text[callback.data])
-    #     print(added)
-
+    if callback.data in btns:
+        
+        skills += callback_text[callback.data]
+        print(skills)
+        
     if callback.data == "✅Готово":
         markup = types.InlineKeyboardMarkup()
         yes = types.InlineKeyboardButton("Да", callback_data="Да")
@@ -183,7 +193,30 @@ def callback_message(callback):
 
     team_work = ["удалась", "не-удалась", "не-относится"]
 
-    if callback.data == "Да" or callback.data == "Нет" or (callback.data in team_work):
+    if callback.data == "Да" or callback.data == "Нет":
+        repeat = callback.data
+        
+        markup = types.InlineKeyboardMarkup()
+        btn1 = types.InlineKeyboardButton("👎1", callback_data="1rate")
+        btn2 = types.InlineKeyboardButton("2", callback_data="2rate")
+        btn3 = types.InlineKeyboardButton("3", callback_data="3rate")
+        btn4 = types.InlineKeyboardButton("4", callback_data="4rate")
+        btn5 = types.InlineKeyboardButton("5", callback_data="5rate")
+        btn6 = types.InlineKeyboardButton("6", callback_data="6rate")
+        btn7 = types.InlineKeyboardButton("7", callback_data="7rate")
+        btn8 = types.InlineKeyboardButton("8", callback_data="8rate")
+        btn9 = types.InlineKeyboardButton("9", callback_data="9rate")
+        btn10 = types.InlineKeyboardButton("🌟10", callback_data="10rate")
+        markup.row(btn1, btn2, btn3)
+        markup.row(btn4, btn5, btn6)
+        markup.row(btn7, btn8, btn9)
+        markup.row(btn10)   
+
+        bot.send_message(callback.message.chat.id, "Оцени как ты справился с этим опытом по 10-бальной шкале", reply_markup=markup)
+
+    if callback.data in team_work:
+        team_work_db = callback.data
+
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton("👎1", callback_data="1rate")
         btn2= types.InlineKeyboardButton("2", callback_data="2rate")
@@ -200,19 +233,14 @@ def callback_message(callback):
         markup.row(btn7, btn8, btn9)
         markup.row(btn10)   
 
-        conn = sqlite3.connect("feed_bot.sql")
-        cur = conn.cursor()
-        did_it = callback.data
-        cur.execute(f"INSERT INTO users (did_it) VALUES ('{did_it}')")
-        cur.close()
-        conn.close()
-
         bot.send_message(callback.message.chat.id, "Оцени как ты справился с этим опытом по 10-бальной шкале", reply_markup=markup)
 
 
     rates = ["1rate","2rate","3rate","4rate","5rate","6rate","7rate","8rate","9rate","10rate",]            
 
     if callback.data in rates:
+        result = callback.data
+
         markup = types.ReplyKeyboardMarkup()
         send = types.KeyboardButton("📩Отправить")
         cancel = types.KeyboardButton("🙅‍♂️Отменить")
@@ -221,9 +249,13 @@ def callback_message(callback):
         
 
         bot.send_message(callback.message.chat.id, "Отправить форму?", reply_markup=markup)
+        
         bot.register_next_step_handler(callback.message, on_click)
-
+    
     if callback.data == "10":
+        points_db = callback.data
+        print(points_db)
+        
         markup = types.ReplyKeyboardMarkup()
         rdy_btn = types.KeyboardButton("✅Готово")
 
@@ -235,6 +267,8 @@ def callback_message(callback):
 
 
     if callback.data == "15":
+        points_db = callback.data
+
         markup = types.ReplyKeyboardMarkup()
         rdy_btn = types.KeyboardButton("✅Готово")
 
@@ -255,6 +289,7 @@ def callback_message(callback):
     team_work_15 = ["удалась-15", "не-удалась-15", "не-относится-15"]
 
     if callback.data in team_work_15:
+        team_work_db = callback.data # скорее всего не сработает надо обозначить все глобал переменные в начале функции
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton("👎1", callback_data="1rate")
         btn2= types.InlineKeyboardButton("2", callback_data="2rate")
@@ -272,38 +307,60 @@ def callback_message(callback):
         markup.row(btn10)   
 
         bot.send_message(callback.message.chat.id, "Оцени как ты справился с этим опытом по 10-бальной шкале", reply_markup=markup)
+    
 
 @bot.message_handler()
 def mid_on_click5(message):
-    conn = sqlite3.connect("feed_bot.sql")
-    cur = conn.cursor()
+    global done
     done = message.text
-
-    cur.execute(f"INSERT INTO users (done) VALUES ('{done}')")
-    
-    cur.close()
-    conn.close()
+    global exactly
+    exactly = None
+    global difficulties
+    difficulties = None
+    global team_work_db
+    team_work_db = None
+    global motivation
+    motivation = None
+    global moment
+    moment = None
 
     if message.text != "":
         bot.register_next_step_handler(message, on_click5)
 
 @bot.message_handler()
 def mid_on_click10(message):
+    global done
+    done = message.text
+    global repeat
+    repeat = None
+    global motivation
+    motivation = None
+    global moment
+    moment = None
+
     if message.text != "":
         bot.register_next_step_handler(message, on_click10)
 
 @bot.message_handler()
 def mid_on_click10_skills(message):
-    if message.text != "":
+    global exactly
+    exactly = message.text
+    if message.text != "":    
         bot.register_next_step_handler(message, on_click10_skills)
 
 @bot.message_handler()
 def mid_on_click15(message):
+    global done
+    done = message.text
+    global repeat
+    repeat = None
     if message.text != "":
         bot.register_next_step_handler(message, on_click15)
 
 @bot.message_handler()
 def mid_on_click15_skills(message):
+    global exactly
+    exactly = message.text
     if message.text != "":
         bot.register_next_step_handler(message, on_click15_skills)
 
@@ -320,6 +377,8 @@ def on_click15_skills(message):
 
 @bot.message_handler()
 def mid_on_click15_difficult(message):
+    global difficulties
+    difficulties = message.text
     if message.text != "":
         bot.register_next_step_handler(message, on_click15_difficult)
 
@@ -336,6 +395,9 @@ def on_click15_difficult(message):
 
 @bot.message_handler()
 def mid_on_click15_motivation(message):
+    global motivation
+    motivation = message.text
+
     if message.text != "":
         bot.register_next_step_handler(message, on_click15_motivation)
 
@@ -352,6 +414,9 @@ def on_click15_motivation(message):
 
 @bot.message_handler()
 def mid_on_click15_success(message):
+    global moment
+    moment = message.text
+    
     if message.text != "":
         bot.register_next_step_handler(message, on_click15_success)
 
@@ -403,7 +468,6 @@ def on_click15(message):
         
         bot.send_message(message.chat.id, "Какой/какие skill/skills удалось прокачать во время планирования и реализации опыта?", reply_markup=markup)
 
-
 @bot.message_handler()
 def on_click10_skills(message):
     if message.text == "✅Готово":
@@ -417,6 +481,8 @@ def on_click10_skills(message):
 
 @bot.message_handler()
 def mid_on_click10_difficult(message):
+    global difficulties
+    difficulties = message.text
     if message.text != "":
         bot.register_next_step_handler(message, on_click10_difficult)
 
@@ -472,7 +538,7 @@ def on_click10(message):
 @bot.message_handler()
 def on_click5(message):
     if message.text == "✅Готово":
-
+        print(name)
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton("Мыслить", callback_data="Мыслить")
         btn2 = types.InlineKeyboardButton("Коммуницировать", callback_data="Коммуницировать")
@@ -502,5 +568,5 @@ def on_click5(message):
         markup.row(btn14)
         # придумать как добавлять сктлы в базу данных
         bot.send_message(message.chat.id, "Какой/какие skill/skills удалось прокачать во время планирования и реализации опыта?", reply_markup=markup)
-       
+
 bot.polling(non_stop=True) # постоянное выполнение кода

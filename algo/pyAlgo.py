@@ -110,8 +110,8 @@ def bfs(start: int, target: int, graph: dict[int]) -> bool:
 
     while queue:
         node = queue.popleft()
-        if node not  in visited:
-            if node == target:
+        if node not in visited:
+            if node ==  target:
                 return True
             
             else:

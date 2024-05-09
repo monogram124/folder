@@ -1,14 +1,5 @@
-def plusOne(dig):
-    digS = ""
-    new_dig = []
-    for num in dig:
-        digS += str(num)
-    
-    digNum = int(digS) + 1
+arr = '["Нести ответвенность за решения", "какать попой"]'
 
-    for num in str(digNum):
-        new_dig.append(int(num))
-    
-    return new_dig
+arr = str(arr)[2:] + str(arr)[:-3]
 
-print(plusOne([1, 2, 3, 4]))
+print(arr)

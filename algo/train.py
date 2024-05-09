@@ -1,3 +1,5 @@
+from collections import deque
+
 def merge_two_lists(a, b):
     i = j = 0
     c = []
@@ -9,12 +11,12 @@ def merge_two_lists(a, b):
         else:
             c.append(b[j])
             j += 1
-
-    if i < len(a):
-        c += a[i:]
         
+    if i < len(a):
+        c.append(a[i:])
+
     if j < len(b):
-        c += b[j:]
+        c.append(b[j:])
 
     return c
 
@@ -23,12 +25,11 @@ def merge_sort(nums):
         return nums
     
     mid = len(nums) // 2
+
     left = merge_sort(nums[:mid])
     right = merge_sort(nums[mid:])
 
     return merge_two_lists(left, right)
-
-print(merge_sort([-1, -2, 123, 7, 14, 153, 75, 9]))
 
 def binary_search(arr, target):
     left = 0
@@ -78,3 +79,35 @@ def quick_sort(nums):
     return quick_sort(less) + [pivot] + quick_sort(greater)
 
 print(quick_sort([-1, -2, 123, 7, 14, 153, 75, 9]))
+
+def bfs(start: int, target: int, graph: dict[int]) -> bool:
+    queue = deque()
+    queue += [start]
+    visited = set()
+
+    while queue:
+        node = queue.popleft()
+
+        if node not in visited:
+            if node == target:
+                return True
+            else:
+                queue += graph[node]
+                visited.add(node)
+
+    return False
+
+def dfs(start: int, target: int, graph: dict[int], visited: list[int]) -> bool:
+    if start == target:
+        return True
+    elif start in visited:
+        return False
+    
+    visited += [start]
+
+    for n in graph[start]:
+        if n not in visited:
+            if dfs(n, target, graph, visited):
+                return True
+    
+    return False
