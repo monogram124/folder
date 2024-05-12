@@ -21,6 +21,9 @@ name = None
 # result = None
 skills = ""
 
+def check():
+    pass
+
 @bot.message_handler(commands=["start"])
 def start(message):
     # conn = sqlite3.connect("feed_bot.sql") # открываю соединение
