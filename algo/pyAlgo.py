@@ -154,3 +154,4 @@ def dfs(start: int, target: int, graph: dict[int], visited: list[int]) -> bool:
 # ЕСЛИ не можем попасть в вершину или сумма весов осталась такой же дублируем значение которое было на следющую строчку
 
 # ,kf,kf,k
+# sdkfjsdjfj

@@ -22,7 +22,7 @@ name = None
 skills = ""
 
 def check():
-    pass
+    print(0)
 
 @bot.message_handler(commands=["start"])
 def start(message):
