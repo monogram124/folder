@@ -1,5 +1,5 @@
-arr = '["Нести ответвенность за решения", "какать попой"]'
+ro = float(input())
+l = float(input())
+s = float(input())
 
-arr = str(arr)[2:] + str(arr)[:-3]
-
-print(arr)
+print((ro*l)/s)

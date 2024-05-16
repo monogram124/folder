@@ -7,7 +7,8 @@ import os
 load_dotenv()
 bot = telebot.TeleBot(os.getenv("TOKEN"))
 
-name = None
+user_form = {}
+
 # house_db = None
 # exp_db = None
 # points_db = None
@@ -26,13 +27,14 @@ def check():
 
 @bot.message_handler(commands=["start"])
 def start(message):
-    # conn = sqlite3.connect("feed_bot.sql") # открываю соединение
-    # cur = conn.cursor()
+    user_form[message.chat.id] = {}
+    conn = sqlite3.connect("feed_bot.sql") # открываю соединение
+    cur = conn.cursor()
 
-    # cur.execute("CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name varchar(50), house varchar(50), exp varchar(50), points varchar(5), done varchar(50), skills varchar(170), repeat varchar(3), exactly varchar(50), dificulties varchar(50), team_work varchar(50), motivation varchar(50), moment varchar(50), result varchar(2))")
-    # conn.commit() # снхронизация с базой данных
-    # cur.close() # закрываю курсор
-    # conn.close() # закрываю соединение
+    cur.execute("CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name varchar(50), house varchar(50), exp varchar(50), points varchar(5), done varchar(50), skills varchar(170), repeat varchar(3), exactly varchar(50), dificulties varchar(50), team_work varchar(50), motivation varchar(50), moment varchar(50), result varchar(2))")
+    conn.commit() # снхронизация с базой данных
+    cur.close() # закрываю курсор
+    conn.close() # закрываю соединение
 
 
     markup = types.ReplyKeyboardMarkup()
@@ -72,10 +74,7 @@ def on_click(message):
     if message.text == "📩Отправить":
         conn = sqlite3.connect("feed_bot.sql") # открываю соединение
         cur = conn.cursor()
-
-        bot.send_message(os.getenv("ID"), f"'{name}', '{house_db}', '{exp_db}', '{points_db}', '{done}', '{skills}', '{repeat}', '{exactly}', '{difficulties}', '{team_work_db}', '{motivation}', '{moment}', '{result}'")
-
-        # cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, repeat, exactly, dificulties, team_work, motivation, moment, result) VALUES ('{name}', '{house_db}', '{exp_db}', '{points_db}', '{done}', '{skills}', '{repeat}', '{exactly}', '{difficulties}', '{team_work_db}', '{motivation}', '{moment}', '{result}')")
+        cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, repeat, exactly, dificulties, team_work, motivation, moment, result) VALUES ('{user_form['name']}', '{user_form['house']}', '{user_form['exp']}', '{user_form['points']}', '{user_form['done']}', '{user_form['skills']}', '{user_form['repeat']}', '{user_form['exactly']}', '{user_form['difficulties']}', '{user_form['team_work']}', '{user_form['motivation']}', '{user_form['moment']}', '{user_form['result']}')")
         conn.commit() # снхронизация с базой данных
         cur.close() # закрываю курсор
         conn.close() # закрываю соединение
@@ -90,19 +89,10 @@ def on_click(message):
         bot.send_message(message.chat.id, "Выберите House", reply_markup=markup)
 
 def user_name(message):
-    global name
-    
-    name = message.text
-    
+    user_form[message.chat.id]['name'] = message.text
+
 @bot.callback_query_handler(func=lambda callback: True)
 def callback_message(callback):
-    global house_db
-    global exp_db
-    global points_db
-    global skills
-    global repeat
-    global team_work_db
-    global result
 
     markup = types.InlineKeyboardMarkup()
     
@@ -111,7 +101,7 @@ def callback_message(callback):
 
     if callback.data in house:
         
-        house_db = callback.data
+        user_form[callback.message.chat.id]['house'] = callback.data
 
         btn1 = types.InlineKeyboardButton("Опыт публичного выступления", callback_data="Опыт публичного выступления")
         btn2 = types.InlineKeyboardButton("Социальный опыт", callback_data="Социальный опыт")
@@ -134,7 +124,8 @@ def callback_message(callback):
         bot.edit_message_text("Какой опыт ты получил?", callback.message.chat.id, callback.message.message_id, reply_markup=markup)
 
     if callback.data in exp:
-        exp_db = callback.data
+        user_form[callback.message.chat.id]['exp'] = callback.data
+
         btn1 = types.InlineKeyboardButton("5", callback_data="5")
         btn2 = types.InlineKeyboardButton("10", callback_data="10")
         btn3 = types.InlineKeyboardButton("15", callback_data="15")
@@ -145,14 +136,12 @@ def callback_message(callback):
         bot.edit_message_text("Кол-во полученных баллов", callback.message.chat.id, callback.message.message_id, reply_markup=markup)
 
     if callback.data == "5":
-        points_db = callback.data
+        user_form[callback.message.chat.id]['points'] = callback.data
 
         markup = types.ReplyKeyboardMarkup()
         rdy_btn = types.KeyboardButton("✅Готово")
 
         markup.add(rdy_btn)
-        
-        
 
         bot.send_message(callback.message.chat.id, "Что именно ты сделал?", reply_markup=markup)
         
@@ -177,10 +166,11 @@ def callback_message(callback):
     }
 
     if callback.data in btns:
-        
-        skills += callback_text[callback.data]
-        print(skills)
-        
+        # global skills
+        # skills += callback_text[callback.data]
+        # user_form[callback.message.chat.id]["skills"] = skills
+        pass
+
     if callback.data == "✅Готово":
         markup = types.InlineKeyboardMarkup()
         yes = types.InlineKeyboardButton("Да", callback_data="Да")
@@ -201,7 +191,7 @@ def callback_message(callback):
     team_work = ["удалась", "не-удалась", "не-относится"]
 
     if callback.data == "Да" or callback.data == "Нет":
-        repeat = callback.data
+        user_form[callback.message.chat.id]['repeat'] = callback.data
         
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton("👎1", callback_data="1rate")
@@ -222,7 +212,8 @@ def callback_message(callback):
         bot.send_message(callback.message.chat.id, "Оцени как ты справился с этим опытом по 10-бальной шкале", reply_markup=markup)
 
     if callback.data in team_work:
-        team_work_db = callback.data
+        user_form[callback.message.chat.id]['team_work'] = callback.data
+
 
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton("👎1", callback_data="1rate")
@@ -246,7 +237,7 @@ def callback_message(callback):
     rates = ["1rate","2rate","3rate","4rate","5rate","6rate","7rate","8rate","9rate","10rate",]            
 
     if callback.data in rates:
-        result = callback.data
+        user_form[callback.message.chat.id]['result'] = callback.data
 
         markup = types.ReplyKeyboardMarkup()
         send = types.KeyboardButton("📩Отправить")
@@ -260,8 +251,8 @@ def callback_message(callback):
         bot.register_next_step_handler(callback.message, on_click)
     
     if callback.data == "10":
-        points_db = callback.data
-        print(points_db)
+        user_form[callback.message.chat.id]['points'] = callback.data
+
         
         markup = types.ReplyKeyboardMarkup()
         rdy_btn = types.KeyboardButton("✅Готово")
@@ -272,9 +263,8 @@ def callback_message(callback):
 
         bot.register_next_step_handler(callback.message, mid_on_click10)
 
-
     if callback.data == "15":
-        points_db = callback.data
+        user_form[callback.message.chat.id]['points'] = callback.data
 
         markup = types.ReplyKeyboardMarkup()
         rdy_btn = types.KeyboardButton("✅Готово")
@@ -296,7 +286,8 @@ def callback_message(callback):
     team_work_15 = ["удалась-15", "не-удалась-15", "не-относится-15"]
 
     if callback.data in team_work_15:
-        team_work_db = callback.data # скорее всего не сработает надо обозначить все глобал переменные в начале функции
+        user_form[callback.message.chat.id]['team_work'] = callback.data
+
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton("👎1", callback_data="1rate")
         btn2= types.InlineKeyboardButton("2", callback_data="2rate")
@@ -314,60 +305,40 @@ def callback_message(callback):
         markup.row(btn10)   
 
         bot.send_message(callback.message.chat.id, "Оцени как ты справился с этим опытом по 10-бальной шкале", reply_markup=markup)
-    
 
 @bot.message_handler()
 def mid_on_click5(message):
     global done
-    done = message.text
-    global exactly
-    exactly = None
-    global difficulties
-    difficulties = None
-    global team_work_db
-    team_work_db = None
-    global motivation
-    motivation = None
-    global moment
-    moment = None
-
+    user_form[message.chat.id]['done'] = message.text
+    
     if message.text != "":
         bot.register_next_step_handler(message, on_click5)
 
 @bot.message_handler()
 def mid_on_click10(message):
-    global done
-    done = message.text
-    global repeat
-    repeat = None
-    global motivation
-    motivation = None
-    global moment
-    moment = None
+    user_form[message.chat.id]['done'] = message.text
 
     if message.text != "":
         bot.register_next_step_handler(message, on_click10)
 
 @bot.message_handler()
 def mid_on_click10_skills(message):
-    global exactly
-    exactly = message.text
+    user_form[message.chat.id]['exactly'] = message.text
+  
     if message.text != "":    
         bot.register_next_step_handler(message, on_click10_skills)
 
 @bot.message_handler()
 def mid_on_click15(message):
-    global done
-    done = message.text
-    global repeat
-    repeat = None
+    user_form[message.chat.id]['done'] = message.text
+
     if message.text != "":
         bot.register_next_step_handler(message, on_click15)
 
 @bot.message_handler()
 def mid_on_click15_skills(message):
-    global exactly
-    exactly = message.text
+    user_form[message.chat.id]['exactly'] = message.text
+
     if message.text != "":
         bot.register_next_step_handler(message, on_click15_skills)
 
@@ -384,8 +355,8 @@ def on_click15_skills(message):
 
 @bot.message_handler()
 def mid_on_click15_difficult(message):
-    global difficulties
-    difficulties = message.text
+    user_form[message.chat.id]['difficulties'] = message.text
+
     if message.text != "":
         bot.register_next_step_handler(message, on_click15_difficult)
 
@@ -402,8 +373,7 @@ def on_click15_difficult(message):
 
 @bot.message_handler()
 def mid_on_click15_motivation(message):
-    global motivation
-    motivation = message.text
+    user_form[message.chat.id]['motivation'] = message.text
 
     if message.text != "":
         bot.register_next_step_handler(message, on_click15_motivation)
@@ -421,8 +391,7 @@ def on_click15_motivation(message):
 
 @bot.message_handler()
 def mid_on_click15_success(message):
-    global moment
-    moment = message.text
+    user_form[message.chat.id]['moment'] = message.text
     
     if message.text != "":
         bot.register_next_step_handler(message, on_click15_success)
@@ -440,7 +409,6 @@ def on_click15_success(message):
         markup.row(btn3)
         
         bot.send_message(message.chat.id, "Удалось ли поработать в команде?", reply_markup=markup)
-
 
 @bot.message_handler()
 def on_click15(message):
@@ -488,8 +456,8 @@ def on_click10_skills(message):
 
 @bot.message_handler()
 def mid_on_click10_difficult(message):
-    global difficulties
-    difficulties = message.text
+    user_form[message.chat.id]['difficulties'] = message.text
+
     if message.text != "":
         bot.register_next_step_handler(message, on_click10_difficult)
 
@@ -511,7 +479,6 @@ def on_click10_difficult(message):
 @bot.message_handler()
 def on_click10(message):
     if message.text == "✅Готово":
-
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton("Мыслить", callback_data="Мыслить")
         btn2 = types.InlineKeyboardButton("Коммуницировать", callback_data="Коммуницировать")
