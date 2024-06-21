@@ -9,32 +9,16 @@ bot = telebot.TeleBot(os.getenv("TOKEN"))
 
 user_form = {}
 
-# house_db = None
-# exp_db = None
-# points_db = None
-# done = None
-# skills = ()
-# exactly = None
-# difficulties = None
-# team_work_db = None
-# motivation = None
-# moment = None
-# result = None
-skills = ""
-
-def check():
-    print(0)
-
 @bot.message_handler(commands=["start"])
 def start(message):
-    user_form[message.chat.id] = {}
-    conn = sqlite3.connect("feed_bot.sql") # открываю соединение
+    user_form[message.chat.id] = {"skills": ""}
+    conn = sqlite3.connect("feed_bot.sql") 
     cur = conn.cursor()
 
-    cur.execute("CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name varchar(50), house varchar(50), exp varchar(50), points varchar(5), done varchar(50), skills varchar(170), repeat varchar(3), exactly varchar(50), dificulties varchar(50), team_work varchar(50), motivation varchar(50), moment varchar(50), result varchar(2))")
-    conn.commit() # снхронизация с базой данных
-    cur.close() # закрываю курсор
-    conn.close() # закрываю соединение
+    cur.execute("CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name varchar(50), house varchar(50), exp varchar(50), points varchar(5), done varchar(50), skills varchar(170), repeat varchar(3), exactly varchar(50), difficulties varchar(50), team_work varchar(50), motivation varchar(50), moment varchar(50), result varchar(2))")
+    conn.commit()
+    cur.close() 
+    conn.close()
 
 
     markup = types.ReplyKeyboardMarkup()
@@ -43,7 +27,7 @@ def start(message):
 
     markup.add(btn1, btn2)
 
-    bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи!", reply_markup=markup)
+    bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи! Чтобы отправить ответы, написанные от руки необходимо нажать кнопку 'Готово'", reply_markup=markup)
 
     bot.register_next_step_handler(message, on_click)
 
@@ -72,19 +56,32 @@ def on_click(message):
         bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи!", reply_markup=markup)
     
     if message.text == "📩Отправить":
-        conn = sqlite3.connect("feed_bot.sql") # открываю соединение
+        conn = sqlite3.connect("feed_bot.sql")
         cur = conn.cursor()
-        cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, repeat, exactly, dificulties, team_work, motivation, moment, result) VALUES ('{user_form['name']}', '{user_form['house']}', '{user_form['exp']}', '{user_form['points']}', '{user_form['done']}', '{user_form['skills']}', '{user_form['repeat']}', '{user_form['exactly']}', '{user_form['difficulties']}', '{user_form['team_work']}', '{user_form['motivation']}', '{user_form['moment']}', '{user_form['result']}')")
-        conn.commit() # снхронизация с базой данных
-        cur.close() # закрываю курсор
-        conn.close() # закрываю соединение
-    
-    if message.text == "проверка":
-        bot.send_message(1774244759, message.from_user.id)
+
+        if user_form[message.chat.id]["points"] == "5":
+            cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, repeat, result) VALUES ('{user_form[message.chat.id]['name']}', '{user_form[message.chat.id]['house']}', '{user_form[message.chat.id]['exp']}', '{user_form[message.chat.id]['points']}', '{user_form[message.chat.id]['done']}', '{user_form[message.chat.id]['skills']}', '{user_form[message.chat.id]['repeat']}', '{user_form[message.chat.id]['result']}')")
+        elif user_form[message.chat.id]["points"] == "10":
+            cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, exactly, difficulties, team_work, result) VALUES ('{user_form[message.chat.id]['name']}', '{user_form[message.chat.id]['house']}', '{user_form[message.chat.id]['exp']}', '{user_form[message.chat.id]['points']}', '{user_form[message.chat.id]['done']}', '{user_form[message.chat.id]['skills']}', '{user_form[message.chat.id]['exactly']}', '{user_form[message.chat.id]['difficulties']}', '{user_form[message.chat.id]['team_work']}', '{user_form[message.chat.id]['result']}')")
+        elif user_form[message.chat.id]["points"] == "15":
+            cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, exactly, difficulties, team_work, motivation, moment, result) VALUES ('{user_form[message.chat.id]['name']}', '{user_form[message.chat.id]['house']}', '{user_form[message.chat.id]['exp']}', '{user_form[message.chat.id]['points']}', '{user_form[message.chat.id]['done']}', '{user_form[message.chat.id]['skills']}', '{user_form[message.chat.id]['exactly']}', '{user_form[message.chat.id]['difficulties']}', '{user_form[message.chat.id]['team_work']}', '{user_form[message.chat.id]['motivation']}', '{user_form[message.chat.id]['moment']}', '{user_form[message.chat.id]['result']}')")
+
+        conn.commit()
+        cur.close()
+        conn.close() 
+
+        # print(user_form)
+        user_form[message.chat.id] = {"skills": ""}
+
+        markup = types.ReplyKeyboardMarkup()
+        btn1 = types.KeyboardButton("✏️Заполнить форму")
+        btn2 = types.KeyboardButton("🌐Сайт House System")
+
+        markup.add(btn1, btn2)
+
+        bot.send_message(message.chat.id, "Форма успешно отправлена!", reply_markup=markup)
 
     if message.text == "✅Готово" and message.text != "":
-        # удаление из ReplyKeyboardMarkup кнопки "готово"
-
         markup.row(btn1, btn2, btn3, btn4)
         bot.send_message(message.chat.id, "Выберите House", reply_markup=markup)
 
@@ -97,7 +94,7 @@ def callback_message(callback):
     markup = types.InlineKeyboardMarkup()
     
     house = ["east", "west", "north", "south"]
-    exp = ["Опыт публичного выступления", "Социальный опыт", "Организаторский опыт", "Опыт творчества", "Опыт наставничества", "Спортивный опыт", "Опыт участника", "Академические достижения"]
+    exp = ["Опыт публичного выступления", "Социальный опыт", "Организаторский опыт", "Опыт творчества", "Опыт наставничества", "Спортивный опыт", "Опыт участника"]
 
     if callback.data in house:
         
@@ -110,7 +107,6 @@ def callback_message(callback):
         btn5 = types.InlineKeyboardButton("Опыт наставничества", callback_data="Опыт наставничества")
         btn6 = types.InlineKeyboardButton("Спортивный опыт", callback_data="Спортивный опыт")
         btn7 = types.InlineKeyboardButton("Опыт участника", callback_data="Опыт участника")
-        btn8 = types.InlineKeyboardButton("Академические достижения", callback_data="Академические достижения")
         
         markup.row(btn1)
         markup.row(btn2)
@@ -119,7 +115,6 @@ def callback_message(callback):
         markup.row(btn5)
         markup.row(btn6)
         markup.row(btn7)
-        markup.row(btn8)
 
         bot.edit_message_text("Какой опыт ты получил?", callback.message.chat.id, callback.message.message_id, reply_markup=markup)
 
@@ -131,7 +126,6 @@ def callback_message(callback):
         btn3 = types.InlineKeyboardButton("15", callback_data="15")
         
         markup.row(btn1, btn2, btn3)
-        
 
         bot.edit_message_text("Кол-во полученных баллов", callback.message.chat.id, callback.message.message_id, reply_markup=markup)
 
@@ -166,11 +160,9 @@ def callback_message(callback):
     }
 
     if callback.data in btns:
-        # global skills
-        # skills += callback_text[callback.data]
-        # user_form[callback.message.chat.id]["skills"] = skills
-        pass
-
+        user_form[callback.message.chat.id]["skills"] += callback_text[callback.data]
+        # print(user_form)
+        
     if callback.data == "✅Готово":
         markup = types.InlineKeyboardMarkup()
         yes = types.InlineKeyboardButton("Да", callback_data="Да")
@@ -308,7 +300,6 @@ def callback_message(callback):
 
 @bot.message_handler()
 def mid_on_click5(message):
-    global done
     user_form[message.chat.id]['done'] = message.text
     
     if message.text != "":
@@ -463,7 +454,6 @@ def mid_on_click10_difficult(message):
 
 @bot.message_handler()
 def on_click10_difficult(message):
-    # тут пользователь пишет столкнулся ли он со сложностями
     if message.text == "✅Готово":
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton("К этому опыту не относится", callback_data="не-относится")
@@ -539,7 +529,7 @@ def on_click5(message):
         markup.row(btn12)
         markup.row(btn13)
         markup.row(btn14)
-        # придумать как добавлять сктлы в базу данных
+
         bot.send_message(message.chat.id, "Какой/какие skill/skills удалось прокачать во время планирования и реализации опыта?", reply_markup=markup)
 
-bot.polling(non_stop=True) # постоянное выполнение кода
+bot.polling(non_stop=True)
