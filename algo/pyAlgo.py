@@ -148,8 +148,34 @@ def dfs(start: int, target: int, graph: dict[int], visited: list[int]) -> bool:
 
 # АЛГОРИТМ ДЕЙКСТРЫ
 # работает так:
-# составим таблицу в которой у нас будут вершины графа и растояние до них, обозначим что изначально до всех вершин кроме стартвой расстояние равно бесконечности
-# затем смотрим в какие вершины можно попасть из старта, записываем до них расстояния в таблицу, далее находим минимальное из них
-# и уже из этой вершины смотрим куда можно попасть, точно так же обновляем пути до ее соседей, но уже не идем в старт
-# ЕСЛИ не можем попасть в вершину или сумма весов осталась такой же дублируем значение которое было на следющую строчку
+# изначально до всех вершин кроме стартовой рассстояние бесконечность, до стартовой 0
+# затем мы перебираем все ребра стартовой и находим с минимальным весом, отмечаю ее как окончательную, по скольку добраться до этой вершины меньше чем за это время просто невозможно
+# потом расматриваем ребра из этой вершины и пробуем улучшить время до вершин соседей, затем среди необработанных вершин находим минииальную и повторяем алгоритм
+# 
 
+def dijkstra(graph: dict[dict], start: int, end: int) -> list[int]:
+    costs = {node: float("inf") for node in graph}
+    costs[start] = 0
+
+    parents = {node: -1 for node in graph}
+    queue = deque([(0, start)])
+
+    while queue:
+        cost, node = queue.popleft()
+
+        for neighbor, edge_cost in graph[node].items():
+            new_cost = cost + edge_cost
+            if new_cost < costs[neighbor]:
+                costs[neighbor] = new_cost
+                parents[neighbor] = node
+                queue.append((new_cost, neighbor))
+
+    path = []
+    cur_node = end
+    while cur_node != -1:
+        path.append(cur_node)
+        cur_node = parents[cur_node]
+
+    path.reverse()
+
+    return path
