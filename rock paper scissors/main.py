@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 import random
 
-bot = telebot.TeleBot("6398602578:AAHownULBZ77SackdjTyGa0oFf63uvLsO9Q")
+bot = telebot.TeleBot("")
 
 @bot.message_handler(commands=["start"])
 def start(message):
