@@ -1,121 +1,7 @@
 from collections import Counter
 from collections import deque
-# def merge_two_lists(a, b):
-#     i = j = 0
-#     c = []
-
-#     while i < len(a) and j < len(b):
-#         if a[i] < b[j]:
-#             c.append(a[i])
-#             i += 1
-#         else:
-#             c.append(b[j])
-#             j += 1
-        
-#     if i < len(a):
-#         c.append(a[i:])
-
-#     if j < len(b):
-#         c.append(b[j:])
-
-#     return c
-
-# def merge_sort(nums):
-#     if len(nums) == 1:
-#         return nums
-    
-#     mid = len(nums) // 2
-
-#     left = merge_sort(nums[:mid])
-#     right = merge_sort(nums[mid:])
-
-#     return merge_two_lists(left, right)
-
-# def binary_search(arr, target):
-#     left = 0
-#     right = len(arr) - 1
-
-#     while left <= right:
-#         mid = (right+left) // 2
-
-#         if target == arr[mid]:
-#             return True
-#         elif target < arr[mid]:
-#             right = mid - 1
-#         else:
-#             left = mid + 1
-        
-#     return False
-
-# print(binary_search(merge_sort([-1, -2, 123, 7, 14, 153, 75, 9]), 123))
-
-# def bubble_sort(nums):
-#     for i in range(len(nums) - 1):
-#         for num in range(len(nums) - i - 1):
-#             if nums[num] > nums[num+1]:
-#                 nums[num], nums[num+1] = nums[num+1], nums[num]
-
-#     return nums
-
-# # print(bubble_sort([-1, -2, 123, 7, 14, 153, 75, 9]))
-
-# def quick_sort(nums):
-#     if len(nums) <= 1:
-#         return nums
- 
-#     less = []
-#     greater = []
-#     pivot = nums[len(nums) // 2]
-
-#     for num in nums:
-#         if num == pivot:
-#             continue
-     
-#         if num < pivot:
-#             less.append(num)
-#         else:
-#             greater.append(num)
-
-#     return quick_sort(less) + [pivot] + quick_sort(greater)
-
-# # print(quick_sort([-1, -2, 123, 7, 14, 153, 75, 9]))
-
-# def bfs(start: int, target: int, graph: dict[int]) -> bool:
-#     queue = deque()
-#     queue += [start]
-#     visited = set()
-
-#     while queue:
-#         node = queue.popleft()
-
-#         if node not in visited:
-#             if node == target:
-#                 return True
-#             else:
-#                 queue += graph[node]
-#                 visited.add(node)
-
-#     return False
-
-# def dfs(start: int, target: int, graph: dict[int], visited: list[int]) -> bool:
-#     if start == target:
-#         return True
-#     elif start in visited:
-#         return False
-    
-#     visited += [start]
-
-#     for n in graph[start]:
-#         if n not in visited:
-#             if dfs(n, target, graph, visited):
-#                 return True
-    
-#     return False
-
-
 
 # LEETCODE PROBLEMS
-
 
 nums1 = [1, 2, 2, 1]
 nums2 = [2, 2]
@@ -200,7 +86,7 @@ def maxFrequencyElements(nums: list[int]) -> int:
         
         vals = sorted(counter.values())
         
-        print(len(vals), sum(vals))
+        # print(len(vals), sum(vals))
         
         # if len(vals) == sum(vals):
         #     return sum(vals)
@@ -228,7 +114,105 @@ def maxFrequencyElements(nums: list[int]) -> int:
 
 # print(maxFrequencyElements([6,13,15,15,11,6,7,12,4,11])) # четвертая
 
-def getSum(a, b):
-    return sum(a, b)
 
-print(getSum(1, 2))
+def isPalindrome(s: str) -> bool:
+    s = s.lower()
+    a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    
+    for char in s:
+        if char not in a:
+            s = s.replace(char, '')
+
+    if s == s[::-1]:
+        return True
+    else:
+        return False
+    
+# print(isPalindrome("A man, a plan, a canal: Panama"))
+
+def smallerNumbersThanCurrent(nums: list[int]) -> list[int]:
+    res = [0 for num in range(0, len(nums))]
+
+    where = 0
+
+    i = 0
+    j = -1
+
+    while i != len(nums):
+        if j >= len(nums) - 1:
+            i += 1
+            j = -1
+            where += 1
+
+        if nums[j] < nums[i]:
+            res[where] += 1
+            j += 1
+        else:
+            j += 1
+
+        if i == len(nums) - 1 and j == len(nums) - 1:
+            break
+
+    return res
+
+# print(smallerNumbersThanCurrent([8,1,2,2,3]))
+
+x = "привет"
+
+print(type(x))
+
+def sortPeople(names: list[str], heights: list[int]) -> list[str]:
+    name_height = {}
+
+    for i in range(0, len(names)):
+        name_height[heights[i]] = names[i]
+
+    sorted_heights = sorted(name_height.keys(), reverse=True)
+    print(sorted_heights)
+    res = []
+
+    for height in sorted_heights:
+        res.append(name_height[height])
+
+    return res
+
+# print(sortPeople(["Mary","John","Emma"], [180,165,170]))
+
+def findTheDistanceValue(arr1: list[int], arr2: list[int], d: int) -> int:
+    count = 0
+
+    i = 0
+    j = 0
+
+    while i <= len(arr1) - 1:
+        if j == len(arr2):
+            j = 0
+            i += 1
+
+        # print(arr1[i], arr2[j])
+
+
+        if abs(arr1[i] - arr2[j]) <= d:
+            count += 1
+            j += 1
+        else:
+            j += 1
+
+        if i == len(arr1) - 1 and j == len(arr2) - 1:
+            break
+    
+    return count
+
+# print(findTheDistanceValue([4,5,8], [10,9,1,8], 2))
+
+def binary(nodes):
+    res = 0
+    n = len(nodes) - 1
+
+    for i in range(0, len(nodes)):
+        res += (nodes[i] * 2**(n-i))
+
+    return res
+print(binary([1,0,0,1,0,0,1,1,1,0,0,0,0,0,0]))
+
+    
