@@ -87,6 +87,34 @@ def merge_sort(nums):
 
     return merge_two_lists(left, right)
 
+# СОРТИРОВКА ВСТАВКАМИ
+
+# АЛГОРИТМ ФЛОЙДА (алгоритм нахождения цикла в связном списке)
+# суть в том что если создать медленный и быстрый указатель, они встретяться в месте где начинается цикл, потмоу что
+# быстрый догонит медленный потому что каждую итерацию цикла у них идет сокращение расстояния на 1(медленный двигается 1 раз быстрый 2 раза)
+# сложность по времени O(n) по сколкьу максимальная длинна котороая может быть между двумя указателями это весь связный список
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def hasCycle(head: ListNode) -> bool:
+        if head is None:
+            return False
+        
+        slow = head
+        fast = head
+        
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+            
+            if slow == fast:
+                return True
+
+        return False
+
 # АЛГОРИТМЫ ГРАФОВ 
 graph = {
     1: [2, 3],

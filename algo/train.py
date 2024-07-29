@@ -213,6 +213,54 @@ def binary(nodes):
         res += (nodes[i] * 2**(n-i))
 
     return res
-print(binary([1,0,0,1,0,0,1,1,1,0,0,0,0,0,0]))
+# print(binary([1,0,0,1,0,0,1,1,1,0,0,0,0,0,0]))
 
+
+# Definition for singly-linked list.
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+class Solution:
+    def mergeNodes(self, head: ListNode) -> ListNode:
+        p1 = p2 = ListNode(head)
+        sum_head = ListNode(0)
+
+        while p2.next:
+            if p1 == head or p1.val == 0:
+                p2 = p2.next
+            
+            if p2.val == 0 and p2 != head and p1 != p2:
+                p1 = p1.next
+                sum_head.next = new_node = ListNode(0)
+                new_node.val += p1.val
+
+        return sum_head.next
     
+print(Solution().mergeNodes(0))
+
+def addTwoNumbers(l1: ListNode, l2: ListNode) -> ListNode:
+        cur1 = l1
+        num1 = []
+
+        while cur1:
+            num1.append(str(cur1.val))
+
+        cur2 = l2
+        num2 = []
+
+        while cur2:
+            num2.append(str(cur2.val))
+        number1 = ""
+        for num in num1:
+            number1 += num
+        
+        number2 = ""
+        for num in num2:
+            number2 += num
+
+        number1 = int(number1)[::-1]
+        number2 = int(number2)[::-1]
+
+        return number1 + number2
